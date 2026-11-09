@@ -91,7 +91,7 @@ input:focus, select:focus, button:focus-visible { outline: 3px solid var(--gold)
 .bar { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; width: clamp(60px, 9vw, 140px); height: 100%; }
 .bar .fill { width: 100%; border-radius: 10px 10px 0 0; height: 4px; transition: height 1s cubic-bezier(.2,.8,.2,1); }
 .bar .n { font-family: var(--display); font-weight: 800; font-size: clamp(22px, 2.4vw, 40px); }
-.bar .lab { font-weight: 800; font-size: clamp(18px, 2vw, 30px); margin-top: 6px; display: flex; align-items: center; gap: 6px; }
+.bar .lab { font-weight: 800; font-size: clamp(18px, 2vw, 30px); margin-top: 6px; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
 
 .board { width: min(900px, 100%); margin: 18px auto; display: flex; flex-direction: column; gap: 10px; }
 .row { display: grid; grid-template-columns: 3em 1fr auto; align-items: center; gap: 14px; background: #fff; color: var(--ink); border-radius: 12px; padding: 12px 18px; font-weight: 800; font-size: clamp(18px, 2vw, 30px); transition: transform .4s; }
@@ -140,6 +140,69 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
   .tiles { grid-template-columns: 1fr; }
 }
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+
+/* ---------- quiz library ---------- */
+.wide { width: min(1040px, 100%); margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+.libhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.libtools { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn.sm { font-size: 15px; padding: 9px 14px; border-radius: 10px; box-shadow: 0 3px 0 rgba(0,0,0,.3); }
+.btn.line { background: #fff; color: var(--ink); box-shadow: none; border: 2px solid var(--line); }
+.btn.danger { background: #fde8ea; color: var(--bad); box-shadow: none; }
+.qzrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 12px; align-items: center; background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 18px; }
+.qzrow h3 { font-size: 24px; word-break: break-word; }
+.qzrow .meta { font-size: 14px; color: var(--muted); font-weight: 700; margin-top: 4px; }
+.qzrow .acts { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.tag { display: inline-block; background: #f3effd; color: var(--ink); border-radius: 8px; padding: 1px 8px; font-size: 12px; font-weight: 800; margin-right: 4px; }
+.msg { background: var(--gold); color: var(--ink); font-weight: 800; border-radius: 10px; padding: 10px 14px; }
+.msg.err { background: #fde8ea; color: var(--bad); }
+.help { background: rgba(255,255,255,.12); border-radius: 14px; padding: 4px 18px; font-size: 15px; }
+.help summary { cursor: pointer; font-weight: 800; padding: 10px 0; }
+.help li { margin-bottom: 6px; }
+
+/* ---------- editor ---------- */
+.ed input, .ed select, .ed textarea { font: inherit; font-size: 16px; font-weight: 600; text-align: left; padding: 8px 10px; border: 2px solid var(--line); border-radius: 10px; width: 100%; color: var(--ink); background: #fff; }
+.ed textarea { resize: vertical; font-weight: 700; font-size: 18px; }
+.ed input[type=radio], .ed input[type=checkbox] { width: 22px; height: 22px; padding: 0; flex: 0 0 auto; accent-color: var(--ok); }
+.edbar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 10px 0; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.edbar input { flex: 1 1 300px; width: auto; font-size: 22px; font-weight: 800; }
+.qcard { background: #fff; color: var(--ink); border-radius: 14px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; border: 3px solid transparent; }
+.qcard.err { border-color: var(--bad); }
+.qc-head { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.qc-head .qn { font-family: var(--display); font-size: 22px; font-weight: 800; min-width: 2.2em; }
+.ed .qc-head select { width: auto; font-weight: 800; }
+.qc-head .sp { flex: 1; }
+.ib { border: 0; background: #f3effd; color: var(--ink); border-radius: 8px; padding: 6px 10px; font-weight: 800; font-size: 15px; }
+.ib.del { background: #fde8ea; color: var(--bad); }
+.opts { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.opt { display: flex; align-items: center; gap: 8px; }
+.ol { flex: 0 0 auto; width: 30px; height: 30px; border-radius: 8px; color: #fff; display: grid; place-items: center; font-weight: 800; }
+.ol.A { background: var(--a); } .ol.B { background: var(--b); } .ol.C { background: var(--c); } .ol.D { background: var(--d); }
+.frow { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+.frow label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 800; color: var(--muted); flex: 1 1 140px; }
+.frow label.chk { flex-direction: row; align-items: center; color: var(--ink); font-size: 15px; padding-bottom: 8px; }
+.frow label.narrow { flex: 0 1 120px; }
+.hint { font-size: 13px; color: var(--muted); font-weight: 600; }
+.qc-err { color: var(--bad); font-weight: 800; font-size: 14px; }
+.qc-err:empty { display: none; }
+.addbar { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; padding: 10px 0 30px; }
+
+/* ---------- typed answers (number / gap fill) ---------- */
+.typebox { background: rgba(255,255,255,.14); border: 3px dashed rgba(255,255,255,.6); border-radius: 16px; padding: 26px; text-align: center; font-weight: 800; font-size: clamp(22px, 2.6vw, 40px); }
+.ansbig { background: #fff; color: var(--ink); border-radius: 16px; padding: 18px; text-align: center; font-family: var(--display); font-weight: 800; font-size: clamp(28px, 4vw, 64px); outline: 6px solid var(--ok); }
+.given { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 14px; }
+.given .chip.ok { background: var(--ok); color: #fff; }
+.ref { font-weight: 800; color: var(--gold); text-align: center; margin-top: 10px; font-size: clamp(16px, 1.6vw, 24px); }
+.pform { flex: 1; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+.pform input { font-size: 30px; padding: 18px; }
+.pform .btn { font-size: 24px; padding: 18px; }
+.pbtns.n2 { grid-template-rows: 1fr; }
+.setupquiz { background: #f3effd; border-radius: 12px; padding: 10px 14px; font-weight: 800; }
+
+@media (max-width: 760px) {
+  .opts { grid-template-columns: 1fr; }
+  .qzrow { grid-template-columns: 1fr; }
+  .qzrow .acts { justify-content: flex-start; }
+}
 </style>
 </head>
 <body>
@@ -149,7 +212,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 <section class="screen" id="home">
   <div class="center">
     <div class="logo">Chem<span>Quiz</span> Live</div>
-    <p style="font-size:20px; font-weight:700; margin:0;">20 chemistry questions · play on your phone</p>
+    <p style="font-size:20px; font-weight:700; margin:0;">Chemistry quiz · play on your phone</p>
     <div class="card" style="display:flex; flex-direction:column; gap:12px;">
       <label for="pinIn" style="font-weight:800;">Game PIN</label>
       <input id="pinIn" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="off">
@@ -163,18 +226,72 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
   </div>
 </section>
 
+<!-- ============ HOST: quiz library ============ -->
+<section class="screen" id="hLibrary" hidden>
+  <div class="wide">
+    <div class="libhead">
+      <div class="logo" style="font-size:clamp(28px,3.4vw,48px)">Chem<span>Quiz</span> Live</div>
+      <button class="btn ghost sm" id="libHome">Back to start</button>
+    </div>
+    <h2 style="font-size:34px;">My quizzes</h2>
+    <div class="libtools">
+      <button class="btn gold sm" id="newQuizBtn">+ New quiz</button>
+      <button class="btn light sm" id="importBtn">Import file (Excel, CSV, JSON)</button>
+      <button class="btn light sm" id="templateBtn">Download Excel template</button>
+      <button class="btn ghost sm" id="backupBtn">Back up all quizzes</button>
+      <button class="btn ghost sm" id="restoreBtn">Restore sample quizzes</button>
+      <input type="file" id="importFile" accept=".xlsx,.xls,.csv,.txt,.json" multiple hidden>
+    </div>
+    <div class="msg" id="libMsg" role="status" hidden></div>
+    <div id="libList" style="display:flex; flex-direction:column; gap:10px;"></div>
+    <details class="help">
+      <summary>How the quiz library works</summary>
+      <ul>
+        <li><b>Question types:</b> multiple choice (2–4 answers), true / false, number (with an optional ± tolerance) and gap fill (students type a word; you list every accepted answer, separated by <b>|</b>).</li>
+        <li><b>Excel import:</b> download the template, fill one question per row, save, then use <i>Import file</i>. CSV files with commas or semicolons work too.</li>
+        <li>Quizzes are saved <b>in this browser</b> on this computer. Use <i>Back up all quizzes</i> to keep a copy or move them to another computer.</li>
+        <li>Students never receive the correct answers in advance: each phone only gets the current question.</li>
+      </ul>
+    </details>
+  </div>
+</section>
+
+<!-- ============ HOST: editor ============ -->
+<section class="screen ed" id="hEditor" hidden>
+  <div class="wide">
+    <div class="edbar">
+      <input id="edTitle" maxlength="80" placeholder="Quiz title, e.g. 4.2 Chemical equations" aria-label="Quiz title">
+      <button class="btn line sm" id="edCancel">Cancel</button>
+      <button class="btn gold sm" id="edSave">Save quiz</button>
+    </div>
+    <div class="msg err" id="edMsg" role="alert" hidden></div>
+    <div id="edList" style="display:flex; flex-direction:column; gap:12px;"></div>
+    <div class="card" id="edEmpty" style="text-align:center;" hidden>No questions yet. Add the first one below.</div>
+    <div class="addbar">
+      <button class="btn light sm" data-add="mc">+ Multiple choice</button>
+      <button class="btn light sm" data-add="tf">+ True / False</button>
+      <button class="btn light sm" data-add="num">+ Number answer</button>
+      <button class="btn light sm" data-add="gap">+ Gap fill</button>
+    </div>
+  </div>
+</section>
+
 <!-- ============ HOST: setup ============ -->
 <section class="screen" id="hSetup" hidden>
   <div class="center">
     <div class="logo">Chem<span>Quiz</span> Live</div>
     <div class="card" style="display:flex; flex-direction:column; gap:12px; text-align:left;">
       <h2 style="color:var(--ink)">Host a game</h2>
+      <div class="setupquiz" id="setupQuiz"></div>
+      <label for="countSel" style="font-weight:800;">Number of questions</label>
+      <select id="countSel"></select>
       <label for="limitSel" style="font-weight:800;">Time per question</label>
-      <select id="limitSel"><option value="10">10 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option></select>
+      <select id="limitSel"><option value="10">10 seconds</option><option value="20" selected>20 seconds</option><option value="30">30 seconds</option><option value="45">45 seconds</option><option value="60">60 seconds</option></select>
+      <div class="small">Questions with their own time (set in the editor) keep it.</div>
       <label style="display:flex; gap:10px; align-items:center; font-weight:700;"><input type="checkbox" id="shuffleChk" style="width:auto"> Shuffle question order</label>
       <button class="btn gold" id="createBtn">Create game</button>
     </div>
-    <button class="btn ghost" id="setupBack">Back</button>
+    <button class="btn ghost" id="setupBack">Back to my quizzes</button>
   </div>
 </section>
 
@@ -200,7 +317,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 <!-- ============ HOST: question ============ -->
 <section class="screen" id="hQuestion" hidden>
   <div class="qhead">
-    <div class="qnum" id="hQnum">Question 1 of 20</div>
+    <div class="qnum" id="hQnum">Question 1</div>
     <div class="qnum" id="hPart"></div>
     <button class="btn ghost" id="skipBtn">End question</button>
   </div>
@@ -210,7 +327,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
     <canvas class="molecule" id="hMol" width="320" height="200" aria-hidden="true"></canvas>
     <div class="answered"><span class="count" id="hAnsCount">0</span>answers</div>
   </div>
-  <div class="tiles" id="hTiles"></div>
+  <div id="hTiles"></div>
 </section>
 
 <!-- ============ HOST: reveal ============ -->
@@ -221,7 +338,8 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
   </div>
   <div class="qtext" id="rQtext" style="font-size:clamp(22px,2.8vw,46px)"></div>
   <div class="chart" id="rChart"></div>
-  <div class="tiles" id="rTiles"></div>
+  <div id="rTiles"></div>
+  <div class="ref" id="rRef"></div>
   <div class="footbar" style="margin-top:14px;"><button class="btn gold" id="toBoardBtn">Show ranking</button></div>
 </section>
 
@@ -260,8 +378,8 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 /* =====================================================================
-   1) FIREBASE SETUP — paste your project's config here (see README).
-      Leave it as null to use DEMO MODE (several tabs in one browser).
+   1) FIREBASE SETUP — your project's config.
+      Set it to null to use DEMO MODE (several tabs in one browser).
    ===================================================================== */
 const FIREBASE_CONFIG = {
   apiKey: "AIzaSyAAAoba9XrdoxMTr6xNqkNC_xtLwzOF2w4",
@@ -272,17 +390,9 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "804495031732",
   appId: "1:804495031732:web:443fbcad59c49c069f86e1"
 };
-/* Example:
-const FIREBASE_CONFIG = {
-  apiKey: "AIza...",
-  authDomain: "your-project.firebaseapp.com",
-  databaseURL: "https://your-project-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "your-project",
-  appId: "1:123:web:abc"
-};
-*/
 
-/* ===================== QUESTIONS (exactly as supplied) ===================== */
+
+/* ===================== SAMPLE QUIZZES ===================== */
 const PARTS = ["Chemistry in everyday life", "Atoms and elements", "Chemical reactions", "Chemistry and our environment"];
 const QUESTIONS = [
   { p: 0, q: "What is the chemical formula of water?", a: ["CO₂", "H₂O", "O₂", "NaCl"], c: 1 },
@@ -306,11 +416,109 @@ const QUESTIONS = [
   { p: 3, q: "Which of these substances is alkaline (basic)?", a: ["Lemon juice", "Vinegar", "Baking soda", "Orange juice"], c: 2 },
   { p: 3, q: "Why should we never mix bleach with vinegar?", a: ["It produces harmless water.", "It can release toxic chlorine gas.", "It produces oxygen.", "It makes the mixture freeze."], c: 1 },
 ];
-const KEY = ["B – H₂O", "C – Oxygen", "B – Liquid water", "C – Citric acid", "A – Sodium chloride", "C – Helium", "B – Atom", "C – Au", "A – Carbon", "D – Mercury",
-  "B – Protons and neutrons", "B – It rusts", "C – Carbon dioxide", "D – Burning wood", "B – Sulphurous acid", "C – 7", "B – Carbon dioxide", "A – Vinegar", "C – Baking soda", "B – It can release toxic chlorine gas"];
-const SCORING = [[18, 20, "Chemistry Genius! 🥇"], [15, 17, "Excellent!"], [12, 14, "Very Good!"], [9, 11, "Good!"], [0, 8, "Keep Practising!"]];
-const rating = (n) => SCORING.find((s) => n >= s[0] && n <= s[1])[2];
+function samples() {
+  return [
+    { id: "sample-champion", title: "Chemistry Champion – 20 questions", updated: Date.now(),
+      qs: QUESTIONS.map((x) => ({ t: "mc", q: x.q, a: x.a.slice(), c: x.c, topic: PARTS[x.p] })) },
+    { id: "sample-types", title: "Demo – all question types", updated: Date.now(), qs: [
+      { t: "tf", q: "Sodium chloride is an ionic compound.", a: ["True", "False"], c: 0, topic: "Bonding" },
+      { t: "tf", q: "Electrons are found in the nucleus of an atom.", a: ["True", "False"], c: 1, topic: "Atomic structure" },
+      { t: "num", q: "How many protons are there in an atom of carbon?", v: 6, tol: 0, topic: "Atomic structure" },
+      { t: "num", q: "What is the relative formula mass (Mr) of H₂O? (Ar: H = 1, O = 16)", v: 18, tol: 0, time: 30, topic: "Moles" },
+      { t: "gap", q: "The chemical symbol for sodium is ___.", acc: ["Na"], cs: true, time: 30, topic: "Elements" },
+      { t: "gap", q: "Rust forms when iron reacts with oxygen and ___.", acc: ["water", "H2O", "moisture"], time: 30, topic: "Reactions" },
+      { t: "mc", q: "Which state of matter has a fixed volume but no fixed shape?", a: ["Solid", "Liquid", "Gas"], c: 1, topic: "States of matter" },
+    ] },
+  ];
+}
+
+/* ===================== QUESTION MODEL =====================
+   { t: "mc" | "tf" | "num" | "gap", q: text,
+     mc/tf: a: [answers], c: index of the correct one
+     num:   v: correct number, tol: allowed ± difference
+     gap:   acc: [accepted answers], cs: case-sensitive?
+     optional: topic, ref (book page), time (seconds) }                       */
+const TYPES = { mc: "Multiple choice", tf: "True / False", num: "Number answer", gap: "Gap fill" };
+const SHORT = { mc: "MC", tf: "T/F", num: "Number", gap: "Gap fill" };
 const L = ["A", "B", "C", "D"];
+const isChoice = (Q) => Q.t === "mc" || Q.t === "tf";
+const uid = () => "z" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+function parseNum(s) {
+  if (typeof s === "number") return isFinite(s) ? s : null;
+  const t = String(s == null ? "" : s).trim().replace(/\s/g, "").replace(/−/g, "-").replace(",", ".");
+  if (!/^[-+]?(\d+\.?\d*|\.\d+)(e[-+]?\d+)?$/i.test(t)) return null;
+  const x = parseFloat(t);
+  return isFinite(x) ? x : null;
+}
+// "H₂O", "h2o " and "H2O." all compare equal (subscripts become digits); case kept only if asked
+function norm(s, cs) {
+  let t = String(s == null ? "" : s).normalize("NFKC").trim().replace(/\s+/g, " ").replace(/[.!]+$/, "");
+  return cs ? t : t.toLowerCase();
+}
+function grade(Q, a) {
+  if (!a) return false;
+  if (isChoice(Q)) return a.c === Q.c;
+  if (Q.t === "num") { const x = parseNum(a.v); return x !== null && Math.abs(x - Q.v) <= (Q.tol || 0) + 1e-9; }
+  if (Q.t === "gap") { const n = norm(a.v, Q.cs); return n !== "" && Q.acc.some((s) => norm(s, Q.cs) === n); }
+  return false;
+}
+function ansText(Q) {
+  if (isChoice(Q)) return L[Q.c] + " – " + Q.a[Q.c];
+  if (Q.t === "num") return String(Q.v) + (Q.tol ? " (± " + Q.tol + ")" : "");
+  return Q.acc.join(" / ");
+}
+const pub = (Q) => { const o = { t: Q.t, q: Q.q }; if (isChoice(Q)) o.a = Q.a; if (Q.topic) o.topic = Q.topic; return o; };
+const refText = (r) => (!r ? "" : "📖 " + (/^\d+([–-]\d+)?$/.test(String(r).trim()) ? "Coursebook p. " + r : r));
+
+// editing copy: fixed 4 option slots, answers as one text field
+function toEdit(q) {
+  const e = { t: TYPES[q.t] ? q.t : "mc", q: q.q || "", topic: q.topic || "", ref: q.ref || "", time: q.time || "" };
+  e.c = Number.isInteger(q.c) ? q.c : 0;
+  if (e.t === "mc") { e.a = (q.a || []).slice(0, 4).map((s) => String(s)); while (e.a.length < 4) e.a.push(""); }
+  if (e.t === "tf") e.a = ["True", "False"];
+  e.v = q.v == null ? "" : String(q.v);
+  e.tol = q.tol ? String(q.tol) : "";
+  e.accT = (q.acc || []).join(" | ");
+  e.cs = !!q.cs;
+  return e;
+}
+function cleanQ(e) {
+  const o = { t: e.t, q: String(e.q || "").trim() };
+  if (e.t === "mc") {
+    const pairs = e.a.map((s, k) => [String(s || "").trim(), k]).filter((p) => p[0]);
+    o.a = pairs.map((p) => p[0]);
+    o.c = pairs.findIndex((p) => p[1] === +e.c);
+  } else if (e.t === "tf") { o.a = ["True", "False"]; o.c = +e.c === 1 ? 1 : 0; }
+  else if (e.t === "num") { o.v = parseNum(e.v); o.tol = Math.abs(parseNum(e.tol) || 0); }
+  else if (e.t === "gap") { o.acc = String(e.accT || "").split("|").map((s) => s.trim()).filter(Boolean); if (e.cs) o.cs = true; }
+  if (String(e.topic || "").trim()) o.topic = String(e.topic).trim();
+  if (String(e.ref || "").trim()) o.ref = String(e.ref).trim();
+  const tm = parseInt(e.time, 10); if (tm >= 5 && tm <= 300) o.time = tm;
+  return o;
+}
+function validate(o) {
+  if (!o.q) return "Write the question text.";
+  if (o.t === "mc" && o.a.length < 2) return "Give at least two answers.";
+  if (o.t === "mc" && o.c < 0) return "Tick the correct answer (it must not be empty).";
+  if (o.t === "num" && o.v === null) return "Enter the correct number (e.g. 18 or 0.25).";
+  if (o.t === "gap" && !o.acc.length) return "Enter at least one accepted answer.";
+  return "";
+}
+const fix = (q) => cleanQ(toEdit(q));
+
+/* ===================== LIBRARY (saved in this browser) ===================== */
+const LIB_KEY = "chemquiz-library-v1";
+let LIB = [], LIB_OK = true;
+function loadLib() {
+  try { const v = JSON.parse(localStorage.getItem(LIB_KEY)); if (Array.isArray(v)) return v; } catch (e) {}
+  return null;
+}
+function saveLib() {
+  try { localStorage.setItem(LIB_KEY, JSON.stringify(LIB)); LIB_OK = true; } catch (e) { LIB_OK = false; }
+  return LIB_OK;
+}
+
 const SHAPES = {   // chemistry icons: hexagon ring, droplet, atom, flask
   A: '<svg viewBox="0 0 24 24"><path d="M12 2 21 7v10l-9 5-9-5V7z"/></svg>',
   B: '<svg viewBox="0 0 24 24"><path d="M12 2c4 5.5 7 9.2 7 12.5A7 7 0 0 1 5 14.5C5 11.2 8 7.5 12 2z"/></svg>',
@@ -393,7 +601,7 @@ async function makeStore() {
 }
 
 /* ===================== UI helpers ===================== */
-const SCREENS = ["home", "hSetup", "hLobby", "hQuestion", "hReveal", "hBoard", "hFinal", "hResults", "player"];
+const SCREENS = ["home", "hLibrary", "hEditor", "hSetup", "hLobby", "hQuestion", "hReveal", "hBoard", "hFinal", "hResults", "player"];
 function show(id) { SCREENS.forEach((s) => ($(s).hidden = s !== id)); window.scrollTo(0, 0); }
 
 let actx = null;
@@ -433,18 +641,314 @@ const sfx = {
   if (!matchMedia("(prefers-reduced-motion: reduce)").matches) draw();
 })();
 
+/* ===================== LIBRARY SCREEN ===================== */
+function libMsg(text, err) { const m = $("libMsg"); m.hidden = !text; m.textContent = text || ""; m.classList.toggle("err", !!err); }
+function typeTags(z) {
+  const n = {}; z.qs.forEach((q) => (n[q.t] = (n[q.t] || 0) + 1));
+  return Object.keys(TYPES).filter((t) => n[t]).map((t) => `<span class="tag">${SHORT[t]} ${n[t]}</span>`).join("");
+}
+function renderLib() {
+  $("libList").innerHTML = LIB.length ? LIB.map((z) => `<div class="qzrow"><div><h3>${esc(z.title)}</h3>
+      <div class="meta">${z.qs.length} question${z.qs.length === 1 ? "" : "s"} &nbsp;${typeTags(z)} · edited ${new Date(z.updated || Date.now()).toLocaleDateString()}</div></div>
+      <div class="acts">
+        <button class="btn gold sm" data-act="play" data-id="${z.id}">Play</button>
+        <button class="btn line sm" data-act="edit" data-id="${z.id}">Edit</button>
+        <button class="btn line sm" data-act="copy" data-id="${z.id}">Copy</button>
+        <button class="btn line sm" data-act="xlsx" data-id="${z.id}" title="Download as an Excel file">Excel</button>
+        <button class="btn line sm" data-act="json" data-id="${z.id}" title="Download as a backup file">JSON</button>
+        <button class="btn danger sm" data-act="del" data-id="${z.id}">Delete</button>
+      </div></div>`).join("")
+    : '<div class="card" style="text-align:center;">No quizzes yet. Create one, import an Excel file, or restore the sample quizzes.</div>';
+  if (!LIB_OK) libMsg("This browser is not letting the app save. Your changes will be lost when you close the page; download your quizzes as Excel or JSON.", true);
+}
+function onLibClick(e) {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const z = LIB.find((x) => x.id === b.dataset.id); if (!z) return;
+  libMsg("");
+  const act = b.dataset.act;
+  if (act === "play") choosePlay(z);
+  else if (act === "edit") openEditor(z);
+  else if (act === "copy") { const c = JSON.parse(JSON.stringify(z)); c.id = uid(); c.title = z.title + " (copy)"; c.updated = Date.now(); LIB.splice(LIB.indexOf(z) + 1, 0, c); saveLib(); renderLib(); libMsg(`Copied “${z.title}”.`); }
+  else if (act === "json") download(new Blob([JSON.stringify({ app: "ChemQuiz Live", version: 1, quizzes: [z] }, null, 2)], { type: "application/json" }), fileName(z.title) + ".json");
+  else if (act === "xlsx") exportXlsx(z).catch((err) => libMsg("Excel export failed: " + err.message, true));
+  else if (act === "del") { if (confirm(`Delete the quiz “${z.title}”? This cannot be undone.`)) { LIB.splice(LIB.indexOf(z), 1); saveLib(); renderLib(); libMsg(`Deleted “${z.title}”.`); } }
+}
+const fileName = (s) => (String(s).replace(/[\\/:*?"<>|]+/g, "").replace(/\s+/g, "_").slice(0, 60) || "quiz");
+function download(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+
+/* ===================== EDITOR ===================== */
+const E = { id: null, title: "", qs: [], dirty: false };
+function openEditor(z) {
+  E.id = z ? z.id : uid(); E.title = z ? z.title : ""; E.qs = z ? z.qs.map(toEdit) : [toEdit({ t: "mc" })]; E.dirty = false;
+  $("edTitle").value = E.title; edMsg("");
+  renderEditor(); show("hEditor");
+  if (!z) $("edTitle").focus();
+}
+function edMsg(t) { $("edMsg").hidden = !t; $("edMsg").textContent = t || ""; }
+function qCard(q, i) {
+  const n = E.qs.length;
+  let body = "";
+  if (q.t === "mc") body = `<div class="opts">${q.a.map((s, k) => `<label class="opt"><input type="radio" name="c${i}" data-f="c" value="${k}" ${+q.c === k ? "checked" : ""} aria-label="Answer ${L[k]} is correct"><span class="ol ${L[k]}">${L[k]}</span><input data-f="a" data-k="${k}" value="${esc(s)}" placeholder="Answer ${L[k]}${k > 1 ? " (optional)" : ""}"></label>`).join("")}</div>
+      <div class="hint">Tick the correct answer. Leave C or D empty for a 2- or 3-answer question.</div>`;
+  else if (q.t === "tf") body = `<div class="frow">${["True", "False"].map((s, k) => `<label class="chk"><input type="radio" name="c${i}" data-f="c" value="${k}" ${+q.c === k ? "checked" : ""}>&nbsp;${s} is correct</label>`).join("")}</div>`;
+  else if (q.t === "num") body = `<div class="frow"><label>Correct number<input data-f="v" inputmode="decimal" value="${esc(q.v)}" placeholder="e.g. 18"></label>
+      <label class="narrow">± Tolerance<input data-f="tol" inputmode="decimal" value="${esc(q.tol)}" placeholder="0"></label></div>
+      <div class="hint">Students type a number. A tolerance of 0.5 accepts 17.5 to 18.5. Decimal comma or point both work.</div>`;
+  else body = `<div class="frow"><label>Accepted answers<input data-f="accT" value="${esc(q.accT)}" placeholder="e.g. water | H2O | moisture"></label>
+      <label class="chk narrow"><input type="checkbox" data-f="cs" ${q.cs ? "checked" : ""}>&nbsp;Case-sensitive</label></div>
+      <div class="hint">Separate answers with |. Spaces and a final full stop are ignored, and H₂O = H2O. Tick case-sensitive for symbols like Co / CO.</div>`;
+  return `<div class="qcard" data-i="${i}">
+    <div class="qc-head"><span class="qn">Q${i + 1}</span>
+      <select data-f="t" aria-label="Question type">${Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${k === q.t ? "selected" : ""}>${v}</option>`).join("")}</select>
+      <span class="sp"></span>
+      <button class="ib" data-act="up" ${i === 0 ? "disabled" : ""} title="Move up">↑</button>
+      <button class="ib" data-act="down" ${i === n - 1 ? "disabled" : ""} title="Move down">↓</button>
+      <button class="ib" data-act="dup" title="Duplicate">Duplicate</button>
+      <button class="ib del" data-act="del" title="Delete">Delete</button></div>
+    <textarea data-f="q" rows="2" placeholder="Question text${q.t === "gap" ? ", e.g. The symbol for sodium is ___." : ""}">${esc(q.q)}</textarea>
+    ${body}
+    <div class="frow"><label>Topic (optional)<input data-f="topic" value="${esc(q.topic)}" placeholder="e.g. 4.2 Chemical equations"></label>
+      <label class="narrow">Book page<input data-f="ref" value="${esc(q.ref)}" placeholder="e.g. 85"></label>
+      <label class="narrow">Time (s)<input data-f="time" inputmode="numeric" value="${esc(q.time)}" placeholder="game"></label></div>
+    <div class="qc-err"></div></div>`;
+}
+function renderEditor() {
+  $("edList").innerHTML = E.qs.map(qCard).join("");
+  $("edEmpty").hidden = E.qs.length > 0;
+}
+function edField(e) {
+  const el = e.target, card = el.closest(".qcard"), f = el.dataset.f;
+  if (!card || !f) return;
+  const i = +card.dataset.i, q = E.qs[i];
+  E.dirty = true;
+  if (f === "t") {
+    if (e.type !== "change") return;
+    const t = el.value, keep = { q: q.q, topic: q.topic, ref: q.ref, time: q.time };
+    let nq = toEdit({ t });
+    if (t === "mc" && q.t === "tf") { nq.a = ["True", "False", "", ""]; nq.c = q.c; }
+    if (t === "mc" && q.t === "mc") nq = q;
+    if (t === "tf") nq.c = +q.c === 1 ? 1 : 0;
+    if ((t === "num" || t === "gap") && q.t === "num") nq.v = q.v, nq.tol = q.tol;
+    if (t === "gap" && q.t !== "gap") nq.accT = q.t === "num" ? q.v : "";
+    E.qs[i] = Object.assign(nq, keep, { t });
+    renderEditor();
+    return;
+  }
+  if (f === "a") q.a[+el.dataset.k] = el.value;
+  else if (f === "c") q.c = +el.value;
+  else if (f === "cs") q.cs = el.checked;
+  else q[f] = el.value;
+  card.classList.remove("err"); card.querySelector(".qc-err").textContent = "";
+}
+function edClick(e) {
+  const b = e.target.closest("button[data-act]"); if (!b) return;
+  const i = +b.closest(".qcard").dataset.i, act = b.dataset.act;
+  if (act === "del" && (E.qs[i].q.trim() && !confirm(`Delete question ${i + 1}?`))) return;
+  if (act === "up" && i > 0) E.qs.splice(i - 1, 0, E.qs.splice(i, 1)[0]);
+  if (act === "down" && i < E.qs.length - 1) E.qs.splice(i + 1, 0, E.qs.splice(i, 1)[0]);
+  if (act === "dup") E.qs.splice(i + 1, 0, JSON.parse(JSON.stringify(E.qs[i])));
+  if (act === "del") E.qs.splice(i, 1);
+  E.dirty = true;
+  renderEditor();
+  const to = act === "up" ? i - 1 : act === "down" || act === "dup" ? i + 1 : -1;
+  if (to >= 0 && $("edList").children[to]) $("edList").children[to].scrollIntoView({ block: "nearest" });
+}
+function addQuestion(t) {
+  E.qs.push(toEdit({ t })); E.dirty = true; renderEditor();
+  const card = $("edList").lastElementChild;
+  card.scrollIntoView({ behavior: "smooth", block: "center" });
+  card.querySelector("textarea").focus({ preventScroll: true });
+}
+function saveEditor() {
+  E.title = $("edTitle").value.trim();
+  const cleaned = E.qs.map(cleanQ);
+  let bad = 0, first = -1;
+  cleaned.forEach((o, i) => {
+    const err = validate(o), card = $("edList").children[i];
+    card.classList.toggle("err", !!err); card.querySelector(".qc-err").textContent = err;
+    if (err) { bad++; if (first < 0) first = i; }
+  });
+  if (!E.title) { edMsg("Give the quiz a title."); $("edTitle").focus(); return; }
+  if (!cleaned.length) { edMsg("Add at least one question."); return; }
+  if (bad) { edMsg(`Fix ${bad} question${bad > 1 ? "s" : ""} marked in red, then save again.`); $("edList").children[first].scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const z = { id: E.id, title: E.title, qs: cleaned, updated: Date.now() };
+  const k = LIB.findIndex((x) => x.id === E.id);
+  if (k >= 0) LIB[k] = z; else LIB.unshift(z);
+  saveLib(); E.dirty = false;
+  renderLib(); show("hLibrary"); libMsg(`Saved “${z.title}” (${z.qs.length} questions).`);
+}
+function cancelEditor() {
+  if (E.dirty && !confirm("Leave without saving? Your changes will be lost.")) return;
+  show("hLibrary");
+}
+
+/* ===================== IMPORT / EXPORT ===================== */
+const HEADER = ["Type", "Question", "Option A", "Option B", "Option C", "Option D", "Answer", "Tolerance", "Case sensitive", "Time (s)", "Topic", "Page"];
+let xlsxReady = null;
+function loadXlsx() {
+  if (window.XLSX) return Promise.resolve();
+  return (xlsxReady = xlsxReady || loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js").catch((e) => { xlsxReady = null; throw new Error("could not load the Excel tool (check the internet connection)"); }));
+}
+function quizRows(z) {
+  return [HEADER, ...z.qs.map((q) => [q.t, q.q, ...(q.t === "mc" ? [0, 1, 2, 3].map((k) => q.a[k] || "") : ["", "", "", ""]),
+    isChoice(q) ? (q.t === "tf" ? q.a[q.c] : L[q.c]) : q.t === "num" ? q.v : q.acc.join(" | "),
+    q.t === "num" && q.tol ? q.tol : "", q.cs ? "yes" : "", q.time || "", q.topic || "", q.ref || ""])];
+}
+function sheetFrom(rows, widths) { const ws = XLSX.utils.aoa_to_sheet(rows); ws["!cols"] = widths.map((w) => ({ wch: w })); return ws; }
+const WIDTHS = [8, 60, 22, 22, 22, 22, 22, 10, 14, 9, 24, 8];
+async function exportXlsx(z) {
+  await loadXlsx();
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheetFrom(quizRows(z), WIDTHS), "Questions");
+  XLSX.utils.book_append_sheet(wb, sheetFrom(HELP_ROWS, [18, 100]), "Help");
+  XLSX.writeFile(wb, fileName(z.title) + ".xlsx");
+}
+const HELP_ROWS = [
+  ["Column", "What to write"],
+  ["Type", "mc = multiple choice · tf = true/false · num = number answer · gap = gap fill (students type a word)"],
+  ["Question", "The question text. For gap fill, use ___ where the missing word goes."],
+  ["Option A–D", "Only for mc. 2 to 4 answers; leave C and D empty if not needed."],
+  ["Answer", "mc: the letter (A, B, C or D) · tf: True or False · num: the number · gap: every accepted answer, separated by |  (e.g. water | H2O)"],
+  ["Tolerance", "Only for num (optional): accepted difference, e.g. 0.5"],
+  ["Case sensitive", "Only for gap (optional): write yes if capitals matter (Co vs CO)"],
+  ["Time (s)", "Optional: seconds for this question (otherwise the game setting is used)"],
+  ["Topic / Page", "Optional: topic name and coursebook page, shown after the answer"],
+  ["", "Keep the first row (the column names). One question per row. Import the file in ChemQuiz Live → My quizzes → Import file."],
+];
+async function downloadTemplate() {
+  await loadXlsx();
+  const ex = { title: "Template", qs: [
+    { t: "mc", q: "What is the chemical formula of water?", a: ["CO₂", "H₂O", "O₂", "NaCl"], c: 1, topic: "Everyday chemistry" },
+    { t: "tf", q: "Sodium chloride is an ionic compound.", a: ["True", "False"], c: 0, topic: "Bonding" },
+    { t: "num", q: "What is the relative formula mass (Mr) of H₂O? (Ar: H = 1, O = 16)", v: 18, tol: 0, time: 30, topic: "Moles" },
+    { t: "gap", q: "The chemical symbol for sodium is ___.", acc: ["Na"], cs: true, time: 30, topic: "Elements", ref: "45" },
+    { t: "gap", q: "Rust forms when iron reacts with oxygen and ___.", acc: ["water", "H2O", "moisture"], topic: "Reactions" },
+  ] };
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, sheetFrom(quizRows(ex), WIDTHS), "Questions");
+  XLSX.utils.book_append_sheet(wb, sheetFrom(HELP_ROWS, [18, 100]), "Help");
+  XLSX.writeFile(wb, "ChemQuiz_template.xlsx");
+}
+function parseCSV(text) {
+  text = text.replace(/^﻿/, "");
+  const first = text.split(/\r?\n/)[0];
+  const d = [",", ";", "\t"].map((c) => [c, first.split(c).length]).sort((a, b) => b[1] - a[1])[0][0];
+  const rows = []; let row = [], f = "", q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) { if (ch === '"') { if (text[i + 1] === '"') { f += '"'; i++; } else q = false; } else f += ch; }
+    else if (ch === '"') q = true;
+    else if (ch === d) { row.push(f); f = ""; }
+    else if (ch === "\n" || ch === "\r") { if (ch === "\r" && text[i + 1] === "\n") i++; row.push(f); rows.push(row); row = []; f = ""; }
+    else f += ch;
+  }
+  if (f !== "" || row.length) { row.push(f); rows.push(row); }
+  return rows;
+}
+function typeOf(s) {
+  s = String(s || "").trim().toLowerCase();
+  if (!s) return null;
+  if (/^(tf|t\/f|true|true\/false|true-false|yes\/no)/.test(s)) return "tf";
+  if (/^(mc|multiple|choice|quiz)/.test(s)) return "mc";
+  if (/^(num|number|numeric|n$)/.test(s)) return "num";
+  if (/^(gap|fill|text|word|type|g$)/.test(s)) return "gap";
+  return "x";
+}
+function rowsToQuiz(rows, title) {
+  rows = rows.map((r) => r.map((c) => (c == null ? "" : String(c)))).filter((r) => r.some((c) => c.trim()));
+  if (!rows.length) throw new Error("the file is empty");
+  const h = rows[0].map((c) => c.trim().toLowerCase());
+  const find = (...keys) => { const k = h.findIndex((c) => keys.some((x) => (x instanceof RegExp ? x.test(c) : c === x))); return k < 0 ? null : k; };
+  const ix = { t: find("type"), q: find(/^question/), a: find("option a", "a", "answer a", "answer 1"), b: find("option b", "b", "answer b", "answer 2"),
+    c: find("option c", "c", "answer c", "answer 3"), d: find("option d", "d", "answer d", "answer 4"),
+    ans: find("answer", "correct", "correct answer", /^correct/), tol: find(/^toler/), cs: find(/^case/), time: find(/^time/), topic: find("topic", "part", "section"), ref: find(/^page/, "ref", "reference") };
+  if (ix.q === null) throw new Error('the first row must contain the column names (at least "Question"); download the template to see the layout');
+  const qs = [], skipped = [];
+  rows.slice(1).forEach((r, n) => {
+    const g = (k) => (ix[k] === null ? "" : (r[ix[k]] || "").trim());
+    const opts = [g("a"), g("b"), g("c"), g("d")], ans = g("ans");
+    let t = typeOf(g("t"));
+    if (t === "x") { skipped.push(n + 2); return; }
+    if (!t) t = opts.some(Boolean) ? "mc" : /^(true|false)$/i.test(ans) ? "tf" : parseNum(ans) !== null ? "num" : "gap";
+    const e = toEdit({ t }); e.q = g("q"); e.topic = g("topic"); e.ref = g("ref"); e.time = g("time");
+    if (t === "mc") {
+      e.a = opts;
+      let c = /^[a-d]$/i.test(ans) ? "abcd".indexOf(ans.toLowerCase()) : /^[1-4]$/.test(ans) ? +ans - 1 : opts.findIndex((o) => o && norm(o) === norm(ans));
+      e.c = c < 0 ? 9 : c;
+    } else if (t === "tf") e.c = /^(t|true|yes|y|1|да|точно|tocno|točno|vistina|вистина)$/i.test(ans) ? 0 : 1;
+    else if (t === "num") { e.v = ans; e.tol = g("tol"); }
+    else { e.accT = ans; e.cs = /^(y|yes|true|1|x|да)$/i.test(g("cs")); }
+    qs.push(cleanQ(e));
+  });
+  if (!qs.length) throw new Error("no questions found under the header row");
+  return { quiz: { id: uid(), title: title || "Imported quiz", qs, updated: Date.now() }, skipped };
+}
+function jsonToQuizzes(text) {
+  const o = JSON.parse(text);
+  const arr = Array.isArray(o) ? (o.length && (o[0].qs || o[0].questions) ? o : [{ title: "Imported quiz", qs: o }]) : o.quizzes || [o];
+  return arr.map((z) => ({ id: uid(), title: String(z.title || "Imported quiz"), updated: Date.now(),
+    qs: (z.qs || z.questions || []).map((q) => (q.t ? fix(q) : fix({ t: "mc", q: q.q, a: q.a, c: q.c, topic: q.topic || (q.p != null ? PARTS[q.p] : "") }))) }))
+    .filter((z) => z.qs.length);
+}
+async function importFiles(files) {
+  const notes = [], errs = [];
+  for (const f of files) {
+    const base = f.name.replace(/\.[^.]+$/, "").replace(/_/g, " ");
+    try {
+      let got = [];
+      if (/\.json$/i.test(f.name)) got = jsonToQuizzes(await f.text());
+      else {
+        let rows;
+        if (/\.xlsx?$/i.test(f.name)) {
+          await loadXlsx();
+          const wb = XLSX.read(await f.arrayBuffer(), { type: "array" });
+          const ws = wb.Sheets["Questions"] || wb.Sheets[wb.SheetNames[0]];
+          rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: "", raw: true });
+        } else rows = parseCSV(await f.text());
+        const r = rowsToQuiz(rows, base);
+        got = [r.quiz];
+        if (r.skipped.length) notes.push(`${f.name}: skipped row${r.skipped.length > 1 ? "s" : ""} ${r.skipped.join(", ")} (unknown type)`);
+      }
+      if (!got.length) throw new Error("no quizzes found in the file");
+      got.forEach((z) => {
+        LIB.unshift(z);
+        const bad = z.qs.filter((q) => validate(q)).length;
+        notes.unshift(`Imported “${z.title}” (${z.qs.length} questions)` + (bad ? ` – ${bad} need fixing: open Edit` : ""));
+      });
+    } catch (err) { errs.push(`${f.name}: ${err.message}`); }
+  }
+  saveLib(); renderLib();
+  libMsg([...errs, ...notes].join(" · "), errs.length > 0);
+}
+
 /* ===================== HOST ===================== */
 let S = null;         // store
-const H = { pin: null, order: [], i: -1, limit: 20, players: {}, game: null, answers: {}, timerId: null, unsubA: null, history: [] };
+const H = { pin: null, quiz: null, qs: [], i: -1, limit: 20, curLimit: 20, players: {}, answers: {}, timerId: null, unsubA: null, history: [] };
+const RATINGS = [[0.9, "Chemistry Genius! 🥇"], [0.75, "Excellent!"], [0.6, "Very Good!"], [0.45, "Good!"], [0, "Keep Practising!"]];
+const rating = (n, tot) => RATINGS.find((r) => n / Math.max(1, tot) >= r[0] - 1e-9)[1];
 
 function genPin() { return String(Math.floor(100000 + Math.random() * 900000)); }
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+
+function choosePlay(z) {
+  const bad = z.qs.findIndex((q) => validate(q));
+  if (bad >= 0) { alert(`Question ${bad + 1} of “${z.title}” is not complete yet. Fix it in the editor first.`); openEditor(z); saveEditor(); return; }
+  H.quiz = z;
+  const n = z.qs.length;
+  $("setupQuiz").textContent = `${z.title} · ${n} question${n === 1 ? "" : "s"}`;
+  $("countSel").innerHTML = `<option value="${n}">All ${n} questions</option>` + [5, 10, 15, 20, 25, 30].filter((k) => k < n).map((k) => `<option value="${k}">${k} random questions</option>`).join("");
+  show("hSetup");
+}
 
 async function createGame() {
   H.limit = +$("limitSel").value;
-  H.order = QUESTIONS.map((_, i) => i);
-  if ($("shuffleChk").checked) H.order.sort(() => Math.random() - 0.5);
+  const all = H.quiz.qs, count = +$("countSel").value, mix = $("shuffleChk").checked;
+  let idx = all.map((_, i) => i);
+  if (count < all.length) { idx = shuffle(idx).slice(0, count); if (!mix) idx.sort((a, b) => a - b); }
+  else if (mix) shuffle(idx);
+  H.qs = idx.map((i) => all[i]);
   H.pin = genPin(); H.i = -1; H.players = {}; H.history = [];
-  await S.set("games/" + H.pin, { state: "lobby", q: -1, n: -1, limit: H.limit, created: TS });
+  await S.set("games/" + H.pin, { state: "lobby", n: -1, total: H.qs.length, title: H.quiz.title, limit: H.limit, created: TS });
   $("lobbyPin").textContent = H.pin; $("rPin").textContent = H.pin;
   const base = location.origin + location.pathname;
   const cfg = !FIREBASE_CONFIG && urlConfig() ? "&cfg=" + new URLSearchParams(location.search).get("cfg") : "";
@@ -453,7 +957,8 @@ async function createGame() {
   $("qr").innerHTML = "";
   if (window.QRCode && S.mode === "live") new QRCode($("qr"), { text: joinLink, width: 240, height: 240, colorDark: "#170f3d", colorLight: "#ffffff" });
   else $("qr").innerHTML = '<div style="color:#170f3d; font-weight:800; width:220px; text-align:center;">QR code appears<br>in live mode</div>';
-  S.on("games/" + H.pin + "/players", (v) => {
+  if (H.unsubP) H.unsubP();
+  H.unsubP = S.on("games/" + H.pin + "/players", (v) => {
     const before = Object.keys(H.players).length;
     H.players = v || {};
     const n = Object.keys(H.players).length;
@@ -465,21 +970,24 @@ async function createGame() {
   show("hLobby");
 }
 
-function tileHTML(Q, cls = "tile") {
-  return Q.a.map((t, k) => `<div class="${cls} ${L[k]}" data-k="${k}"><span class="sh">${SHAPES[L[k]]}</span><span>${L[k]}: ${esc(t)}</span></div>`).join("");
+function tileHTML(a) {
+  return a.map((t, k) => `<div class="tile ${L[k]}" data-k="${k}"><span class="sh">${SHAPES[L[k]]}</span><span>${L[k]}: ${esc(t)}</span></div>`).join("");
 }
 
 async function startQuestion() {
   H.i++;
-  const qi = H.order[H.i], Q = QUESTIONS[qi];
-  H.answers = {};
-  await S.update("games/" + H.pin, { state: "question", q: qi, n: H.i, qStart: TS, reveal: null });
-  $("hQnum").textContent = `Question ${H.i + 1} of ${QUESTIONS.length}`;
-  $("hPart").textContent = PARTS[Q.p];
+  const Q = H.qs[H.i], lim = Q.time || H.limit;
+  H.curLimit = lim; H.answers = {};
+  await S.update("games/" + H.pin, { state: "question", n: H.i, limit: lim, qStart: TS, reveal: null, cur: pub(Q) });
+  $("hQnum").textContent = `Question ${H.i + 1} of ${H.qs.length}`;
+  $("hPart").textContent = Q.topic || TYPES[Q.t];
+  $("hPart").hidden = !Q.topic && Q.t === "mc";
   $("hQtext").textContent = Q.q;
-  $("hTiles").innerHTML = tileHTML(Q);
+  $("hTiles").className = isChoice(Q) ? "tiles" : "";
+  $("hTiles").innerHTML = isChoice(Q) ? tileHTML(Q.a) : `<div class="typebox">✏️ Type your answer on your phone${Q.t === "num" ? " (a number)" : ""}</div>`;
   $("hAnsCount").textContent = "0";
-  drawMolecule(qi);
+  $("hTimer").textContent = lim;
+  drawMolecule();
   show("hQuestion");
   const g = await S.get("games/" + H.pin);
   const qStart = g.qStart;
@@ -491,9 +999,9 @@ async function startQuestion() {
     if (n > 0 && n >= Object.keys(H.players).length) endQuestion(qStart);
   });
   clearInterval(H.timerId);
-  let last = H.limit;
+  let last = lim;
   H.timerId = setInterval(() => {
-    const left = Math.max(0, H.limit - (S.now() - qStart) / 1000);
+    const left = Math.max(0, lim - (S.now() - qStart) / 1000);
     const s = Math.ceil(left);
     $("hTimer").textContent = s;
     $("hTimer").classList.toggle("low", left <= 5);
@@ -511,42 +1019,60 @@ async function endQuestion(qStart) {
   clearInterval(H.timerId);
   if (H.unsubA) { H.unsubA(); H.unsubA = null; }
   sfx.end();
-  const qi = H.order[H.i], Q = QUESTIONS[qi];
+  const Q = H.qs[H.i], lim = H.curLimit;
   const answers = (await S.get(`games/${H.pin}/answers/${H.i}`)) || {};
   const players = (await S.get(`games/${H.pin}/players`)) || {};
-  const counts = [0, 0, 0, 0];
-  const upd = {};
-  const round = {};
+  const counts = isChoice(Q) ? Q.a.map(() => 0) : null;
+  const tally = {};   // typed answers: normalised text -> {label, n, ok}
+  const upd = {}, round = {};
+  let nOk = 0, nTot = 0;
   Object.entries(players).forEach(([pid, p]) => {
     const a = answers[pid];
-    let pts = 0, ok = false, streak = p.streak || 0;
-    if (a && a.c >= 0 && a.c <= 3) counts[a.c]++;
-    if (a && a.c === Q.c) {
-      ok = true;
-      const el = Math.min(Math.max((a.at - qStart) / 1000, 0), H.limit);
+    let pts = 0, streak = p.streak || 0;
+    const ok = grade(Q, a);
+    if (a) {
+      nTot++;
+      if (counts && a.c >= 0 && a.c < counts.length) counts[a.c]++;
+      if (!counts) { const k = norm(a.v, Q.cs) || "(empty)"; tally[k] = tally[k] || { label: String(a.v || "").trim().slice(0, 30) || "(empty)", n: 0, ok }; tally[k].n++; }
+    }
+    if (ok) {
+      nOk++;
+      const el = Math.min(Math.max((a.at - qStart) / 1000, 0), lim);
       streak += 1;
-      pts = Math.round(1000 * (1 - el / H.limit / 2)) + Math.min(streak - 1, 5) * 100;
+      pts = Math.round(1000 * (1 - el / lim / 2)) + Math.min(streak - 1, 5) * 100;
     } else streak = 0;
     upd[`players/${pid}/score`] = (p.score || 0) + pts;
     upd[`players/${pid}/correct`] = (p.correct || 0) + (ok ? 1 : 0);
     upd[`players/${pid}/streak`] = streak;
-    upd[`players/${pid}/last`] = { n: H.i, pts, ok, c: a ? a.c : -1 };
-    round[pid] = { pts, ok, c: a ? a.c : -1 };
+    upd[`players/${pid}/last`] = { n: H.i, pts, ok, none: !a };
+    round[pid] = { pts, ok, c: a && a.c != null ? a.c : -1, v: a && a.v != null ? String(a.v) : null };
   });
-  H.history[H.i] = { qi, round };
+  H.history[H.i] = { round };
   upd.state = "reveal";
-  upd.reveal = { counts, c: Q.c };
+  upd.reveal = { text: ansText(Q), nOk, nTot };
   await S.update("games/" + H.pin, upd);
   // host reveal screen
-  $("rQnum").textContent = `Question ${H.i + 1} of ${QUESTIONS.length}`;
+  $("rQnum").textContent = `Question ${H.i + 1} of ${H.qs.length}`;
   $("rQtext").textContent = Q.q;
-  const max = Math.max(1, ...counts);
-  $("rChart").innerHTML = counts.map((n, k) => `<div class="bar"><div class="n">${n}</div><div class="fill" style="background:var(--${L[k].toLowerCase()})" data-h="${(n / max) * 100}"></div><div class="lab">${SHAPES[L[k]].replace("<svg", '<svg style="width:22px;height:22px;fill:#fff"')} ${L[k]} ${k === Q.c ? "✓" : ""}</div></div>`).join("");
-  $("rTiles").innerHTML = tileHTML(Q);
-  [...$("rTiles").children].forEach((t, k) => { if (k === Q.c) { t.classList.add("right"); t.insertAdjacentHTML("beforeend", '<span class="tick">✓</span>'); } else t.classList.add("dim"); });
+  const bar = (n, max, col, lab, w) => `<div class="bar" ${w ? 'style="width:clamp(130px,14vw,210px)"' : ""}><div class="n">${n}</div><div class="fill" style="background:${col}" data-h="${(n / max) * 100}"></div><div class="lab">${lab}</div></div>`;
+  if (counts) {
+    const max = Math.max(1, ...counts);
+    $("rChart").innerHTML = counts.map((n, k) => bar(n, max, `var(--${L[k].toLowerCase()})`, `${SHAPES[L[k]].replace("<svg", '<svg style="width:22px;height:22px;fill:#fff"')} ${L[k]} ${k === Q.c ? "✓" : ""}`)).join("");
+    $("rTiles").className = "tiles";
+    $("rTiles").innerHTML = tileHTML(Q.a);
+    [...$("rTiles").children].forEach((t, k) => { if (k === Q.c) { t.classList.add("right"); t.insertAdjacentHTML("beforeend", '<span class="tick">✓</span>'); } else t.classList.add("dim"); });
+  } else {
+    const wrong = Object.keys(players).length - nOk, max = Math.max(1, nOk, wrong);
+    $("rChart").innerHTML = bar(nOk, max, "var(--ok)", "✓ Correct", 1) + bar(wrong, max, "var(--bad)", "✗ Wrong", 1);
+    const top = Object.values(tally).sort((a, b) => b.n - a.n).slice(0, 10);
+    $("rTiles").className = "";
+    $("rTiles").innerHTML = `<div class="ansbig">✓ ${esc(ansText(Q))}</div>` +
+      (top.length ? `<div class="given">${top.map((t) => `<span class="chip ${t.ok ? "ok" : ""}">${esc(t.label)} × ${t.n}</span>`).join("")}</div>` : "");
+  }
+  $("rRef").textContent = refText(Q.ref);
   show("hReveal");
   requestAnimationFrame(() => setTimeout(() => [...$("rChart").querySelectorAll(".fill")].forEach((f) => (f.style.height = Math.max(2, +f.dataset.h) + "%")), 50));
-  $("toBoardBtn").textContent = H.i === QUESTIONS.length - 1 ? "Show final ranking" : "Show ranking";
+  $("toBoardBtn").textContent = H.i === H.qs.length - 1 ? "Show final ranking" : "Show ranking";
   ending = false;
 }
 
@@ -556,10 +1082,10 @@ function ranked(players) {
 
 async function showBoard() {
   const players = (await S.get(`games/${H.pin}/players`)) || {};
-  if (H.i === QUESTIONS.length - 1) return showFinal(players);
+  if (H.i === H.qs.length - 1) return showFinal(players);
   await S.update("games/" + H.pin, { state: "board" });
   const list = ranked(players);
-  $("bSub").textContent = `After question ${H.i + 1} of ${QUESTIONS.length} · ${list.length} players`;
+  $("bSub").textContent = `After question ${H.i + 1} of ${H.qs.length} · ${list.length} players`;
   $("bList").innerHTML = list.slice(0, 8).map((p, k) => `<div class="row ${k === 0 ? "top1" : ""}"><span class="rk">${k + 1}</span><span>${esc(p.name)}${p.last && p.last.pts ? `<span class="gain">+${p.last.pts}</span>` : ""}</span><span class="pts">${p.score || 0}</span></div>`).join("") ||
     '<div class="row"><span></span><span>No players yet</span><span></span></div>';
   show("hBoard");
@@ -567,12 +1093,11 @@ async function showBoard() {
 
 async function showFinal(players) {
   await S.update("games/" + H.pin, { state: "final" });
-  const list = ranked(players);
-  const pos = [1, 0, 2];
-  $("podium").innerHTML = pos.map((k) => {
+  const list = ranked(players), tot = H.qs.length;
+  $("podium").innerHTML = [1, 0, 2].map((k) => {
     const p = list[k];
     if (!p) return "";
-    return `<div class="step p${k + 1}"><div class="nm">${esc(p.name)}</div><div class="sc">${p.score || 0} pts · ${p.correct || 0}/20</div><div class="sc rating">${rating(p.correct || 0)}</div><div class="blk">${k + 1}</div></div>`;
+    return `<div class="step p${k + 1}"><div class="nm">${esc(p.name)}</div><div class="sc">${p.score || 0} pts · ${p.correct || 0}/${tot}</div><div class="sc rating">${rating(p.correct || 0, tot)}</div><div class="blk">${k + 1}</div></div>`;
   }).join("");
   show("hFinal");
   sfx.fanfare();
@@ -581,38 +1106,45 @@ async function showFinal(players) {
 
 function showResults() {
   S.get(`games/${H.pin}/players`).then((players) => {
-    const list = ranked(players);
+    const list = ranked(players), tot = H.qs.length;
     $("resTitle").textContent = "Full results";
     $("resBody").innerHTML = `<table><tr><th>Rank</th><th>Name</th><th style="text-align:right">Points</th><th style="text-align:right">Correct</th><th>Result</th></tr>` +
-      list.map((p, k) => `<tr><td>${k + 1}</td><td>${esc(p.name)}</td><td class="num">${p.score || 0}</td><td class="num">${p.correct || 0} / 20</td><td>${rating(p.correct || 0)}</td></tr>`).join("") + `</table>`;
+      list.map((p, k) => `<tr><td>${k + 1}</td><td>${esc(p.name)}</td><td class="num">${p.score || 0}</td><td class="num">${p.correct || 0} / ${tot}</td><td>${rating(p.correct || 0, tot)}</td></tr>`).join("") + `</table>`;
     show("hResults");
   });
 }
 
 function showKey() {
-  const rows = H.order.map((qi, n) => {
-    const h = H.history[n], tot = h ? Object.keys(h.round).length : 0, ok = h ? Object.values(h.round).filter((r) => r.ok).length : 0;
-    return `<tr><td>${qi + 1}</td><td>${esc(QUESTIONS[qi].q)}</td><td><b>${esc(KEY[qi])}</b></td><td class="num">${tot ? Math.round((ok / tot) * 100) + "%" : "–"}</td></tr>`;
+  const tot = H.qs.length;
+  const rows = H.qs.map((Q, n) => {
+    const h = H.history[n], all = h ? Object.keys(h.round).length : 0, ok = h ? Object.values(h.round).filter((r) => r.ok).length : 0;
+    return `<tr><td>${n + 1}</td><td>${esc(Q.q)}<div class="small">${TYPES[Q.t]}${Q.ref ? " · p. " + esc(Q.ref) : ""}</div></td><td><b>${esc(ansText(Q))}</b></td><td class="num">${all ? Math.round((ok / all) * 100) + "%" : "–"}</td></tr>`;
   });
+  const bands = RATINGS.map((r, i) => { const lo = Math.ceil(r[0] * tot - 1e-9), hi = i === 0 ? tot : Math.ceil(RATINGS[i - 1][0] * tot - 1e-9) - 1; return lo <= hi ? `<tr><td>${lo === hi ? lo : lo + "–" + hi}</td><td>${r[1]}</td></tr>` : ""; });
   $("resTitle").textContent = "Answer key – teacher's copy";
   $("resBody").innerHTML = `<table><tr><th>Q</th><th>Question</th><th>Correct answer</th><th style="text-align:right">Class correct</th></tr>${rows.join("")}</table>
-    <table style="margin-top:14px; width:auto;"><tr><th>Correct answers</th><th>Result</th></tr>${SCORING.map((s) => `<tr><td>${s[0]}–${s[1]}</td><td>${s[2]}</td></tr>`).join("")}</table>`;
+    <table style="margin-top:14px; width:auto;"><tr><th>Correct answers</th><th>Result</th></tr>${bands.join("")}</table>`;
   show("hResults");
 }
 
 async function downloadCSV() {
-  const list = ranked(await S.get(`games/${H.pin}/players`));
-  const head = ["Rank", "Name", "Points", "Correct", "Result", ...H.order.map((qi) => "Q" + (qi + 1))];
+  const list = ranked(await S.get(`games/${H.pin}/players`)), tot = H.qs.length;
+  const cell = (s) => '"' + String(s).replace(/"/g, '""') + '"';
+  const head = ["Rank", "Name", "Points", "Correct", "Result", ...H.qs.map((_, n) => "Q" + (n + 1))];
   const lines = [head.join(",")];
   list.forEach((p, k) => {
-    const per = H.order.map((qi, n) => { const r = H.history[n] && H.history[n].round[p.id]; return r ? (r.c >= 0 ? L[r.c] : "-") + (r.ok ? " ✓" : "") : ""; });
-    lines.push([k + 1, '"' + p.name.replace(/"/g, '""') + '"', p.score || 0, p.correct || 0, '"' + rating(p.correct || 0) + '"', ...per].join(","));
+    const per = H.qs.map((Q, n) => {
+      const r = H.history[n] && H.history[n].round[p.id];
+      if (!r) return "";
+      const given = isChoice(Q) ? (r.c >= 0 ? L[r.c] : "-") : r.v != null ? r.v : "-";
+      return cell(given + (r.ok ? " ✓" : ""));
+    });
+    lines.push([k + 1, cell(p.name), p.score || 0, p.correct || 0, cell(rating(p.correct || 0, tot)), ...per].join(","));
   });
-  const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
-  const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = `chemquiz-results-${H.pin}.csv`; a.click();
+  download(new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" }), `chemquiz-results-${H.pin}.csv`);
 }
 
-function drawMolecule(qi) {
+function drawMolecule() {
   // a small decorative ball-and-stick water molecule that turns while the question runs
   const cv = $("hMol"), ctx = cv.getContext("2d");
   let t = 0; clearInterval(drawMolecule.id);
@@ -640,6 +1172,7 @@ function pid() {
 async function join() {
   const pin = $("pinIn").value.trim(), name = $("nameIn").value.trim().slice(0, 16);
   $("joinErr").textContent = "";
+  if (!S) return ($("joinErr").textContent = "Still connecting… try again in a moment.");
   if (!/^\d{6}$/.test(pin)) return ($("joinErr").textContent = "Enter the 6-digit game PIN shown on the board.");
   if (!name) return ($("joinErr").textContent = "Enter a nickname.");
   const g = await S.get("games/" + pin);
@@ -674,18 +1207,34 @@ function renderPlayer() {
   lastRender = key;
   clearInterval(P.timerId);
   document.body.style.background = "";
+  const tot = g.total || 0;
   if (g.state === "lobby") {
     const n = Object.keys(P.players).length;
     body.innerHTML = `<div class="pmsg"><div class="icon">✓</div><div class="big">You're in!</div><div style="font-weight:700;">See your name on the board?<br>Waiting for the teacher to start… (${n} players)</div></div>`;
   } else if (g.state === "question") {
-    const Q = QUESTIONS[g.q];
+    const C = g.cur || { t: "mc", q: "", a: [] };
     if (P.answered[g.n] !== undefined) {
       body.innerHTML = `<div class="pmsg"><div class="icon">⏳</div><div class="big">Answer locked</div><div style="font-weight:700;">Waiting for the others…</div></div>`;
       return;
     }
-    body.innerHTML = `<div class="ptimer"><div id="pT"></div></div><div class="pq">${g.n + 1}/${QUESTIONS.length} · ${esc(Q.q)}</div>
-      <div class="pbtns">${Q.a.map((t, k) => `<button class="pbtn ${L[k]}" data-k="${k}">${SHAPES[L[k]]}<span>${L[k]}: ${esc(t)}</span></button>`).join("")}</div>`;
-    body.querySelectorAll(".pbtn").forEach((b) => (b.onclick = () => answer(+b.dataset.k)));
+    const head = `<div class="ptimer"><div id="pT"></div></div><div class="pq">${g.n + 1}/${tot} · ${esc(C.q)}</div>`;
+    if (C.t === "num" || C.t === "gap") {
+      body.innerHTML = head + `<form class="pform" id="pForm" autocomplete="off">
+        <input id="pAns" maxlength="40" ${C.t === "num" ? 'inputmode="decimal" placeholder="Your number"' : 'placeholder="Your answer" autocapitalize="off" autocorrect="off" spellcheck="false"'} aria-label="Your answer">
+        <button class="btn gold" type="submit">Submit</button><div class="small" id="pErr" style="color:#fff;" role="alert"></div></form>`;
+      $("pForm").onsubmit = (e) => {
+        e.preventDefault();
+        const v = $("pAns").value.trim();
+        if (!v) return ($("pErr").textContent = "Type an answer first.");
+        if (C.t === "num" && parseNum(v) === null) return ($("pErr").textContent = "Type a number, e.g. 18 or 0.5");
+        answer({ v });
+      };
+      setTimeout(() => { const i = $("pAns"); if (i) i.focus(); }, 50);
+    } else {
+      const a = C.a || [];
+      body.innerHTML = head + `<div class="pbtns ${a.length <= 2 ? "n2" : ""}">${a.map((t, k) => `<button class="pbtn ${L[k]}" data-k="${k}">${SHAPES[L[k]]}<span>${C.t === "tf" ? esc(t) : L[k] + ": " + esc(t)}</span></button>`).join("")}</div>`;
+      body.querySelectorAll(".pbtn").forEach((b) => (b.onclick = () => answer({ c: +b.dataset.k })));
+    }
     P.timerId = setInterval(() => {
       const left = Math.max(0, g.limit - (S.now() - g.qStart) / 1000);
       const el = $("pT"); if (el) el.style.width = (left / g.limit) * 100 + "%";
@@ -697,29 +1246,29 @@ function renderPlayer() {
     if (!last) { body.innerHTML = `<div class="pmsg"><div class="big">Next question coming…</div></div>`; return; }
     const ok = last.ok;
     document.body.style.background = ok ? "var(--ok)" : "var(--bad)";
-    const Q = QUESTIONS[g.q];
-    body.innerHTML = `<div class="pmsg"><div class="icon">${ok ? "✓" : "✗"}</div><div class="big">${ok ? "Correct!" : last.c < 0 ? "No answer" : "Not quite"}</div>
-      <div style="font-weight:800; font-size:22px;">${ok ? "+" + last.pts + " points" : "Correct answer: " + L[Q.c] + " – " + esc(Q.a[Q.c])}</div>
+    const text = g.reveal && g.reveal.text ? g.reveal.text : "";
+    body.innerHTML = `<div class="pmsg"><div class="icon">${ok ? "✓" : "✗"}</div><div class="big">${ok ? "Correct!" : last.none ? "No answer" : "Not quite"}</div>
+      <div style="font-weight:800; font-size:22px;">${ok ? "+" + last.pts + " points" : "Correct answer: " + esc(text)}</div>
       ${P.me.streak > 1 ? `<div style="font-weight:800;">🔥 Streak: ${P.me.streak}</div>` : ""}
       <div class="pscore" style="font-size:20px;">You are ${ordinal(rank)} of ${total}</div></div>`;
   } else if (g.state === "final") {
     const { rank, total } = myRank();
     const c = P.me ? P.me.correct || 0 : 0;
     body.innerHTML = `<div class="pmsg"><div class="icon">${rank === 1 ? "🏆" : rank <= 3 ? "🏅" : "⭐"}</div><div class="big">${ordinal(rank)} place</div>
-      <div style="font-weight:800; font-size:22px;">${P.me ? P.me.score || 0 : 0} points · ${c}/20 correct</div>
-      <div class="rating" style="font-size:24px;">${rating(c)}</div><div style="font-weight:700;">out of ${total} players</div></div>`;
+      <div style="font-weight:800; font-size:22px;">${P.me ? P.me.score || 0 : 0} points · ${c}/${tot} correct</div>
+      <div class="rating" style="font-size:24px;">${rating(c, tot)}</div><div style="font-weight:700;">out of ${total} players</div></div>`;
     if (rank <= 3) confetti();
   }
 }
 function ordinal(n) { const s = ["th", "st", "nd", "rd"], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 
-async function answer(k) {
+async function answer(payload) {
   const g = P.game;
   if (!g || g.state !== "question" || P.answered[g.n] !== undefined) return;
-  P.answered[g.n] = k;
+  P.answered[g.n] = payload;
   if (navigator.vibrate) navigator.vibrate(40);
   renderPlayer();
-  await S.set(`games/${P.pin}/answers/${g.n}/${P.id}`, { c: k, at: TS });
+  await S.set(`games/${P.pin}/answers/${g.n}/${P.id}`, Object.assign({ at: TS }, payload));
 }
 
 /* ===================== confetti ===================== */
@@ -738,18 +1287,28 @@ function confetti() {
 
 /* ===================== boot ===================== */
 (async function boot() {
-  S = await makeStore();
-  if (S.mode === "demo") {
-    $("modeBanner").hidden = false;
-    $("modeBanner").textContent = "Demo mode: open this page in several tabs of the same browser (one host, the rest players). Add a Firebase config to play on phones.";
-  }
-  const pin = new URLSearchParams(location.search).get("pin");
-  if (pin) $("pinIn").value = pin;
+  LIB = loadLib() || samples();
+  saveLib();
   $("joinBtn").onclick = join;
   $("nameIn").addEventListener("keydown", (e) => e.key === "Enter" && join());
   $("pinIn").addEventListener("keydown", (e) => e.key === "Enter" && $("nameIn").focus());
-  $("hostBtn").onclick = () => show("hSetup");
-  $("setupBack").onclick = () => show("home");
+  $("hostBtn").onclick = () => { renderLib(); libMsg(""); show("hLibrary"); };
+  $("libHome").onclick = () => show("home");
+  $("libList").onclick = onLibClick;
+  $("newQuizBtn").onclick = () => openEditor(null);
+  $("importBtn").onclick = () => $("importFile").click();
+  $("importFile").onchange = async (e) => { const f = [...e.target.files]; e.target.value = ""; if (f.length) { libMsg("Importing…"); await importFiles(f); } };
+  $("templateBtn").onclick = () => downloadTemplate().catch((err) => libMsg("Template download failed: " + err.message, true));
+  $("backupBtn").onclick = () => download(new Blob([JSON.stringify({ app: "ChemQuiz Live", version: 1, quizzes: LIB }, null, 2)], { type: "application/json" }), "ChemQuiz_all_quizzes_" + new Date().toISOString().slice(0, 10) + ".json");
+  $("restoreBtn").onclick = () => { const s = samples(); let n = 0; s.forEach((z) => { if (!LIB.some((x) => x.id === z.id)) { LIB.push(z); n++; } }); saveLib(); renderLib(); libMsg(n ? `Restored ${n} sample quiz${n > 1 ? "zes" : ""}.` : "The sample quizzes are already in your list."); };
+  $("edList").addEventListener("input", edField);
+  $("edList").addEventListener("change", edField);
+  $("edList").addEventListener("click", edClick);
+  $("edTitle").addEventListener("input", () => (E.dirty = true));
+  document.querySelectorAll("[data-add]").forEach((b) => (b.onclick = () => addQuestion(b.dataset.add)));
+  $("edSave").onclick = saveEditor;
+  $("edCancel").onclick = cancelEditor;
+  $("setupBack").onclick = () => { renderLib(); show("hLibrary"); };
   $("createBtn").onclick = createGame;
   $("startBtn").onclick = () => startQuestion();
   $("toBoardBtn").onclick = showBoard;
@@ -758,7 +1317,15 @@ function confetti() {
   $("keyBtn").onclick = showKey;
   $("csvBtn").onclick = downloadCSV;
   $("resBack").onclick = () => show("hFinal");
-  $("newGameBtn").onclick = () => show("hSetup");
+  $("newGameBtn").onclick = () => { renderLib(); show("hLibrary"); };
+  window.addEventListener("beforeunload", (e) => { if (!$("hEditor").hidden && E.dirty) { e.preventDefault(); e.returnValue = ""; } });
+  const pin = new URLSearchParams(location.search).get("pin");
+  if (pin) $("pinIn").value = pin;
+  S = await makeStore();
+  if (S.mode === "demo") {
+    $("modeBanner").hidden = false;
+    $("modeBanner").textContent = "Demo mode: open this page in several tabs of the same browser (one host, the rest players). Add a Firebase config to play on phones.";
+  }
 })();
 </script>
 </body>
