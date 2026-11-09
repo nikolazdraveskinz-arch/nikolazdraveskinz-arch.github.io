@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Who Wants to Be a Chemistry Champion?</title>
-<meta name="description" content="Classroom chemistry quiz game with a 20-step ladder and three lifelines.">
+<title>Chemistry Champion</title>
+<meta name="description" content="Classroom chemistry quiz game with a prize ladder, lifelines and an admin mode.">
 <style>
   :root {
     --bg1: #05061a;
@@ -20,13 +20,16 @@
     --green: #1fbf5a;
     --red: #e0313b;
     --orange: #ff9d1e;
+    --bg4: #3a1a8c;
+    --hex1: #1b2373;
+    --hex2: #070b3b;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
   body {
     font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
     color: var(--text);
-    background: radial-gradient(ellipse at 50% 120%, #3a1a8c 0%, var(--bg3) 25%, var(--bg2) 55%, var(--bg1) 100%);
+    background: radial-gradient(ellipse at 50% 120%, var(--bg4) 0%, var(--bg3) 25%, var(--bg2) 55%, var(--bg1) 100%);
     overflow: hidden;
     user-select: none;
   }
@@ -73,7 +76,7 @@
   .lifelines { display: flex; gap: 1.2vw; }
   .life {
     width: clamp(64px, 6.4vw, 110px); height: clamp(42px, 4.2vw, 70px); border-radius: 50%;
-    border: 3px solid var(--line); background: radial-gradient(circle at 50% 35%, #2b3a9e, #0a0f45);
+    border: 3px solid var(--line); background: radial-gradient(circle at 50% 35%, var(--hex1), var(--hex2));
     color: #fff; font-weight: 800; font-size: clamp(13px, 1.25vw, 22px); cursor: pointer;
     box-shadow: 0 0 14px rgba(106,140,255,0.6); transition: transform .15s, opacity .3s;
     display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1;
@@ -107,7 +110,7 @@
   .qmeta { text-align: center; color: var(--gold2); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: clamp(14px, 1.4vw, 24px); }
   .qmeta span { color: var(--muted); }
   .hex {
-    position: relative; background: linear-gradient(180deg, #1b2373, #070b3b);
+    position: relative; background: linear-gradient(180deg, var(--hex1), var(--hex2));
     clip-path: polygon(3.5% 0, 96.5% 0, 100% 50%, 96.5% 100%, 3.5% 100%, 0 50%);
     padding: 0 6%;
   }
@@ -160,7 +163,7 @@
   @keyframes fadein { from { opacity: 0; } }
   .card {
     width: min(92vw, 1100px); max-height: 92vh; overflow: auto; text-align: center; padding: 4vh 4vw;
-    background: linear-gradient(180deg, rgba(27,35,115,.96), rgba(7,11,59,.98)); border: 2px solid var(--line);
+    background: linear-gradient(180deg, var(--hex1), var(--hex2)); border: 2px solid var(--line);
     border-radius: 24px; box-shadow: 0 0 40px rgba(106,140,255,.45);
   }
   .card h1 { font-size: clamp(34px, 5vw, 86px); color: var(--gold2); letter-spacing: .04em; line-height: 1.05; text-shadow: 0 0 22px rgba(245,197,66,.55); }
@@ -211,16 +214,83 @@
   .toast.show { opacity: 1; }
   #confetti { position: fixed; inset: 0; z-index: 25; pointer-events: none; }
 
-  .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4vh 2vw; text-align: left; margin: 3vh auto 0; max-width: 900px; }
+  .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4vh 2vw; text-align: left; margin: 2.4vh auto 0; max-width: 900px; }
   .setup label { display: flex; flex-direction: column; gap: .5vh; color: var(--muted); font-weight: 700; font-size: clamp(14px, 1.2vw, 20px); }
   .setup label.wide { grid-column: 1 / -1; }
-  .setup select { font: inherit; font-size: clamp(16px, 1.4vw, 24px); font-weight: 700; color: #fff; background: #0b0f3d; border: 2px solid var(--line); border-radius: 12px; padding: .5em .7em; }
+  .setup select, .setup input[type=text] { font: inherit; font-size: clamp(16px, 1.4vw, 24px); font-weight: 700; color: #fff; background: var(--hex2); border: 2px solid var(--line); border-radius: 12px; padding: .5em .7em; }
   .setup .toggle { flex-direction: row; margin-top: 0; align-self: end; padding-bottom: .5em; }
   .note { font-size: clamp(13px, 1.1vw, 18px) !important; color: var(--muted) !important; }
   .note a { color: var(--gold2); }
   .warn { color: #ffb3b8 !important; font-weight: 700; }
+  .cardtop { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1vh; }
+  .langsw { display: flex; gap: 0; border: 2px solid rgba(184,192,255,.5); border-radius: 10px; overflow: hidden; }
+  .langsw button { background: transparent; color: var(--muted); border: 0; padding: .4em .8em; font-weight: 800; cursor: pointer; font-size: clamp(12px, 1vw, 16px); }
+  .langsw button.on { background: var(--gold); color: #1c1200; }
+  .life.heart { cursor: default; font-size: clamp(20px, 2vw, 34px); color: #ff6b81; }
+  .life.used { opacity: .35; position: relative; }
+  .life.used::after { content: ""; position: absolute; width: 110%; height: 4px; background: var(--red); transform: rotate(-28deg); border-radius: 2px; }
+
+  /* ---------- admin ---------- */
+  #adminScreen, #pinScreen { z-index: 40; }
+  .admin { width: min(96vw, 1200px); text-align: left; padding: 2.4vh 2.4vw; display: flex; flex-direction: column; gap: 1.4vh; height: 92vh; }
+  .admin h2 { margin: 0; color: var(--gold2); font-size: clamp(22px, 2vw, 34px); }
+  .adhead { display: flex; justify-content: space-between; align-items: center; gap: 1vw; }
+  .tabs { display: flex; flex-wrap: wrap; gap: .5vw; border-bottom: 2px solid rgba(106,140,255,.4); padding-bottom: 1vh; }
+  .tab { background: transparent; border: 2px solid transparent; color: var(--muted); font-weight: 800; font-size: clamp(13px, 1vw, 17px); padding: .45em .9em; border-radius: 10px; cursor: pointer; }
+  .tab.on { background: var(--gold); color: #1c1200; }
+  .tab:hover:not(.on) { border-color: var(--line); color: #fff; }
+  .pane { flex: 1; overflow: auto; padding-right: .6vw; font-size: clamp(14px, 1.1vw, 18px); }
+  .pane h3 { color: var(--gold2); margin: 1.6vh 0 .8vh; font-size: clamp(16px, 1.3vw, 22px); }
+  .pane h3:first-child { margin-top: 0; }
+  .frm { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2vh 1.4vw; }
+  .frm label, .fld { display: flex; flex-direction: column; gap: .4vh; color: var(--muted); font-weight: 700; }
+  .frm label.wide { grid-column: 1 / -1; }
+  .admin input[type=text], .admin input[type=number], .admin input[type=password], .admin select, .admin textarea {
+    font: inherit; font-weight: 600; color: #fff; background: rgba(0,0,0,.35); border: 2px solid rgba(106,140,255,.6); border-radius: 10px; padding: .45em .65em; width: 100%; }
+  .admin textarea { resize: vertical; }
+  .admin input:focus, .admin select:focus, .admin textarea:focus { outline: 2px solid var(--gold); }
+  .chk { display: flex !important; flex-direction: row !important; align-items: center; gap: .6em; color: #fff !important; font-weight: 700; cursor: pointer; }
+  .chk input { width: 1.2em; height: 1.2em; accent-color: var(--gold); flex: 0 0 auto; }
+  .hint { color: var(--muted); font-size: .85em; font-weight: 600; margin: .4vh 0; }
+  .card.admin p { font-size: clamp(13px, 1vw, 16px); margin: .5vh 0; line-height: 1.4; }
+  .card.admin p.hint, .card.admin span.hint { color: var(--muted); }
+  .sbtn { font: inherit; font-weight: 800; font-size: clamp(13px, 1vw, 17px); padding: .5em 1.1em; border-radius: 30px; cursor: pointer; border: 2px solid var(--gold); background: linear-gradient(180deg, #ffd56b, #f0a81c); color: #1c1200; }
+  .sbtn.ghost { background: transparent; color: #fff; border-color: var(--line); }
+  .sbtn.danger { background: transparent; color: #ff9ea4; border-color: #ff9ea4; }
+  .row { display: flex; flex-wrap: wrap; gap: .8vw; align-items: center; margin: 1vh 0; }
+  .lt { border-collapse: collapse; width: 100%; max-width: 720px; }
+  .lt td, .lt th { padding: .25em .6em; border-bottom: 1px solid rgba(255,255,255,.12); text-align: left; }
+  .lt th { color: var(--gold2); }
+  .lt input[type=text] { padding: .25em .5em; }
+  .themes { display: flex; flex-wrap: wrap; gap: 1vw; }
+  .theme { border: 3px solid transparent; border-radius: 14px; padding: .6em 1em; cursor: pointer; color: #fff; font-weight: 800; min-width: 150px; text-align: center; }
+  .theme.on { border-color: var(--gold); box-shadow: 0 0 14px rgba(245,197,66,.6); }
+  .qed { background: rgba(0,0,0,.28); border: 2px solid rgba(106,140,255,.35); border-radius: 14px; padding: 1.2vh 1vw; margin-bottom: 1.2vh; display: flex; flex-direction: column; gap: .8vh; }
+  .qed.err { border-color: var(--red); }
+  .qed .qh { display: flex; gap: .6vw; align-items: center; flex-wrap: wrap; }
+  .qed .qh b { color: var(--gold2); min-width: 2.4em; }
+  .qed .qh select { width: auto; }
+  .qed .sp { flex: 1; }
+  .ib { font: inherit; font-weight: 800; background: rgba(255,255,255,.1); color: #fff; border: 0; border-radius: 8px; padding: .3em .7em; cursor: pointer; }
+  .ib.del { color: #ff9ea4; }
+  .ib:disabled { opacity: .35; cursor: default; }
+  .opts2 { display: grid; grid-template-columns: 1fr 1fr; gap: .8vh 1vw; }
+  .opt2 { display: flex; align-items: center; gap: .5em; }
+  .opt2 .L { color: var(--orange); font-weight: 900; width: 1.2em; }
+  .opt2 input[type=radio] { width: 1.2em; height: 1.2em; accent-color: #3ee07c; flex: 0 0 auto; }
+  .qerr { color: #ff9ea4; font-weight: 800; }
+  .qerr:empty { display: none; }
+  .ro { color: var(--muted); font-style: italic; }
+  .admsg { background: var(--gold); color: #1c1200; font-weight: 800; border-radius: 10px; padding: .5em .9em; }
+  .admsg.err { background: #ffd0d4; color: #8a0f18; }
+  .hist { border-collapse: collapse; width: 100%; font-size: .95em; }
+  .hist th, .hist td { padding: .35em .6em; border-bottom: 1px solid rgba(255,255,255,.12); text-align: left; }
+  .hist th { color: var(--gold2); position: sticky; top: 0; background: var(--hex2); }
+  .hist td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .pinbox { width: min(92vw, 460px); }
+  .pinbox input { font: inherit; font-size: 32px; text-align: center; letter-spacing: .3em; width: 100%; padding: .4em; border-radius: 12px; border: 2px solid var(--line); background: rgba(0,0,0,.35); color: #fff; margin-top: 2vh; }
   @media (max-width: 900px) {
-    .setup { grid-template-columns: 1fr; }
+    .setup, .opts2 { grid-template-columns: 1fr; }
     #app { grid-template-columns: 1fr; }
     #ladder { display: none; }
     .answers { grid-template-columns: 1fr; }
@@ -233,14 +303,15 @@
 <div id="app">
   <section id="main">
     <div class="topbar">
-      <div class="brand">Chemistry Champion<small id="brandSub">The 20-Question Challenge</small></div>
+      <div class="brand"><span id="brandName">Chemistry Champion</span><small id="brandSub">The 20-Question Challenge</small></div>
       <div style="display:flex; align-items:center; gap:1.4vw;">
-        <button class="iconbtn" id="fsBtn" title="Full screen">⛶ Full screen</button>
-        <button class="iconbtn" id="restartTop" title="Restart">↻ Restart</button>
+        <button class="iconbtn" id="fsBtn" data-i="fullscreen">⛶ Full screen</button>
+        <button class="iconbtn" id="restartTop" data-i="restart">↻ Restart</button>
         <div class="lifelines">
           <button class="life" id="ll5050" title="50:50">50:50</button>
-          <button class="life" id="llPhone" title="Phone a Friend"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
-          <button class="life" id="llAudience" title="Ask the Audience"><svg viewBox="0 0 24 24"><path d="M4 20V10h3v10H4zm6.5 0V4h3v16h-3zM17 20v-7h3v7h-3z"/></svg></button>
+          <button class="life" id="llPhone"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
+          <button class="life" id="llAudience"><svg viewBox="0 0 24 24"><path d="M4 20V10h3v10H4zm6.5 0V4h3v16h-3zM17 20v-7h3v7h-3z"/></svg></button>
+          <div class="life heart" id="llExtra" hidden>❤</div>
         </div>
       </div>
     </div>
@@ -251,64 +322,69 @@
     </div>
 
     <div class="stage">
-      <div class="qmeta" id="qmeta">Question 1 <span>of 20</span></div>
+      <div class="qmeta" id="qmeta"></div>
       <div class="hexwrap"><div class="hex question" id="question">…</div></div>
       <div class="answers" id="answers"></div>
     </div>
   </section>
 
   <aside id="ladder">
-    <div class="ladder-title">MONEY LADDER</div>
+    <div class="ladder-title" id="ladderTitle">MONEY LADDER</div>
     <ol class="rungs" id="rungs"></ol>
-    <div class="ladder-note" id="ladderNote">◆ Safe havens: Question 5 and Question 10</div>
+    <div class="ladder-note" id="ladderNote"></div>
   </aside>
 </div>
 
 <!-- start -->
 <div class="overlay show" id="startScreen">
   <div class="card">
-    <p style="letter-spacing:.2em; color:var(--muted); font-weight:700;">CLASSROOM QUIZ</p>
-    <h1>Who Wants to Be a<br>Chemistry Champion?</h1>
-    <div class="setup">
-      <label class="wide">Quiz<select id="quizSel"></select></label>
-      <label>Questions<select id="countSel"></select></label>
-      <label>Time per question<select id="timeSel"><option value="10" selected>10 seconds (challenge)</option><option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option><option value="0">No timer</option></select></label>
-      <label class="toggle"><input type="checkbox" id="shuffleChk"> Random question order</label>
+    <div class="cardtop">
+      <div class="langsw" role="group" aria-label="Language"><button data-lang="en">EN</button><button data-lang="mk">MK</button></div>
+      <button class="iconbtn" id="adminBtn" data-i="admin">⚙ Admin</button>
     </div>
-    <p id="startInfo" style="margin-top:2.5vh;"></p>
-    <p>Three lifelines: 50:50, Phone a Friend, Ask the Audience. Press <b>A, B, C or D</b> or click an answer.</p>
+    <p style="letter-spacing:.2em; color:var(--muted); font-weight:700;" id="startLabel">CLASSROOM QUIZ</p>
+    <h1 id="startTitle">Who Wants to Be a<br>Chemistry Champion?</h1>
+    <div class="setup">
+      <label class="wide"><span data-i="quiz">Quiz</span><select id="quizSel"></select></label>
+      <label><span data-i="questions">Questions</span><select id="countSel"></select></label>
+      <label><span data-i="timePer">Time per question</span><select id="timeSel"></select></label>
+      <label><span data-i="player">Player or team (optional)</span><input type="text" id="playerIn" maxlength="30" autocomplete="off"></label>
+      <label class="toggle"><input type="checkbox" id="shuffleChk"> <span data-i="randomOrder">Random question order</span></label>
+    </div>
+    <p id="startInfo" style="margin-top:2.2vh;"></p>
+    <p id="llInfo"></p>
     <p class="warn" id="startWarn" hidden></p>
-    <button class="btn" id="startBtn">▶ START THE GAME</button>
-    <p class="note" style="margin-top:2vh;">Questions come from <a href="../" target="_blank" rel="noopener">ChemQuiz Live → My quizzes</a> on this computer. Multiple-choice and true/false questions are used.</p>
+    <button class="btn" id="startBtn" data-i="startBtn">▶ START THE GAME</button>
+    <p class="note" style="margin-top:2vh;" id="startNote"></p>
   </div>
 </div>
 
 <!-- final answer confirm -->
 <div class="overlay" id="confirmScreen">
   <div class="card final">
-    <h2 id="confirmText">Is that your final answer?</h2>
+    <h2 data-i="finalQ">Is that your final answer?</h2>
     <p id="confirmChoice"></p>
-    <button class="btn" id="yesBtn">YES — LOCK IT IN</button>
-    <button class="btn ghost" id="noBtn">NO, LET ME THINK</button>
+    <button class="btn" id="yesBtn" data-i="yes">YES — LOCK IT IN</button>
+    <button class="btn ghost" id="noBtn" data-i="no">NO, LET ME THINK</button>
   </div>
 </div>
 
 <!-- phone -->
 <div class="overlay" id="phoneScreen">
   <div class="card phone">
-    <h2>📞 Phone a Friend</h2>
+    <h2 data-i="phoneTitle">📞 Phone a Friend</h2>
     <p id="phoneWho"></p>
     <div class="bubble"><span id="phoneMsg" class="typing"></span></div><br>
-    <button class="btn" id="phoneClose">THANKS, BACK TO THE GAME</button>
+    <button class="btn" id="phoneClose" data-i="thanks">THANKS, BACK TO THE GAME</button>
   </div>
 </div>
 
 <!-- audience -->
 <div class="overlay" id="audienceScreen">
   <div class="card">
-    <h2>📊 Ask the Audience</h2>
+    <h2 data-i="audTitle">📊 Ask the Audience</h2>
     <div class="chart" id="chart"></div>
-    <button class="btn" id="audClose">BACK TO THE GAME</button>
+    <button class="btn" id="audClose" data-i="back">BACK TO THE GAME</button>
   </div>
 </div>
 
@@ -320,21 +396,40 @@
 <!-- teacher -->
 <div class="overlay" id="teacherScreen">
   <div class="card">
-    <h2 style="color:var(--gold2)">🏆 Answer Key – Teacher's Copy</h2>
+    <h2 style="color:var(--gold2)" data-i="keyTitle">🏆 Answer Key – Teacher's Copy</h2>
     <div class="keygrid" id="keyGrid"></div>
-    <h2 style="margin-top:3vh;">⭐ Scoring</h2>
+    <h2 style="margin-top:3vh;" data-i="scoring">⭐ Scoring</h2>
     <table class="scoretable" id="scoreTable"></table>
-    <button class="btn ghost" id="teacherClose">CLOSE</button>
-    <button class="btn" id="teacherRestart">↻ RESTART</button>
+    <button class="btn ghost" id="teacherClose" data-i="close">CLOSE</button>
+    <button class="btn" id="teacherRestart" data-i="restartBtn">↻ RESTART</button>
+  </div>
+</div>
+
+<!-- admin PIN -->
+<div class="overlay" id="pinScreen">
+  <div class="card pinbox">
+    <h2 data-i="pinTitle">🔒 Admin PIN</h2>
+    <input type="password" id="pinIn" inputmode="numeric" maxlength="12" autocomplete="off" aria-label="PIN">
+    <p class="warn" id="pinErr"></p>
+    <button class="btn" id="pinOk">OK</button>
+    <button class="btn ghost" id="pinCancel" data-i="cancel">CANCEL</button>
+  </div>
+</div>
+
+<!-- admin -->
+<div class="overlay" id="adminScreen">
+  <div class="card admin">
+    <div class="adhead"><h2 data-i="adminTitle">⚙ Admin – game settings</h2><button class="sbtn" id="adminClose" data-i="done">Done</button></div>
+    <div class="tabs" id="tabs"></div>
+    <div class="admsg" id="adMsg" hidden></div>
+    <div class="pane" id="pane"></div>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 <canvas id="confetti"></canvas>
-
 <script>
-// ===================== QUESTIONS =====================
-// Built-in quiz (exactly as supplied). Other quizzes come from the ChemQuiz Live library saved in this browser.
+// ===================== BUILT-IN QUIZ (exactly as supplied) =====================
 const BUILTIN = [
   { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "What is the chemical formula of water?", a: ["CO₂", "H₂O", "O₂", "NaCl"], c: 1 },
   { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "Which gas do humans need to breathe to survive?", a: ["Nitrogen", "Hydrogen", "Oxygen", "Carbon dioxide"], c: 2 },
@@ -357,37 +452,190 @@ const BUILTIN = [
   { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Which of these substances is alkaline (basic)?", a: ["Lemon juice", "Vinegar", "Baking soda", "Orange juice"], c: 2 },
   { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Why should we never mix bleach with vinegar?", a: ["It produces harmless water.", "It can release toxic chlorine gas.", "It produces oxygen.", "It makes the mixture freeze."], c: 1 },
 ];
-const BUILTIN_ID = "sample-champion";
-
-// Ratings by share of correct answers (18/20, 15/20, 12/20, 9/20 in the original 20-question game)
-const RATINGS = [[0.9, "Chemistry Genius! 🥇"], [0.75, "Excellent!"], [0.6, "Very Good!"], [0.45, "Good!"], [0, "Keep Practising!"]];
-
-const FULL_LADDER = [100, 200, 300, 500, 1000, 2000, 3000, 5000, 8000, 10000, 16000, 25000, 32000, 50000, 64000, 100000, 125000, 250000, 500000, 1000000];
+const BUILTIN_ID = "sample-champion", BUILTIN_TITLE = "Chemistry Champion – 20 questions";
+const LIB_KEY = "chemquiz-library-v1", CFG_KEY = "chemchampion-settings-v1", HIST_KEY = "chemchampion-history-v1";
+const DEFAULT_LADDER = [100, 200, 300, 500, 1000, 2000, 3000, 5000, 8000, 10000, 16000, 25000, 32000, 50000, 64000, 100000, 125000, 250000, 500000, 1000000];
 const LETTERS = ["A", "B", "C", "D"];
 const MAX_Q = 20, MIN_Q = 5;
-let QUESTIONS = [], LADDER = FULL_LADDER.slice(), SAFE = [4, 9], TIME_LIMIT = 10, SCORING = [];
 
-// ===================== STATE =====================
-let cur = 0, correctCount = 0, locked = false, hidden = [], usedLL = {}, selected = -1;
-let timerOn = true, timeLeft = TIME_LIMIT, timerId = null, timerPaused = false, lastTick = 0;
-let history = [];   // per question: chosen index or -1 (timeout) / undefined
+// ===================== TEXTS: English / Macedonian =====================
+const T = {
+  en: {
+    fullscreen: "⛶ Full screen", restart: "↻ Restart", admin: "⚙ Admin",
+    label: "CLASSROOM QUIZ", title: "Who Wants to Be a<br>Chemistry Champion?", brand: "Chemistry Champion", challenge: "The {n}-Question Challenge",
+    quiz: "Quiz", questions: "Questions", timePer: "Time per question", player: "Player or team (optional)", randomOrder: "Random question order",
+    allN: "All {n} questions", randN: "{n} random questions", secs: "{n} seconds", challengeTag: " (challenge)", noTimer: "No timer",
+    startInfo: "{n} questions · climb the ladder to {top}", safeInfo: " · safe havens at {list}", qn: "Question {n}", and: "and",
+    llInfo: "Lifelines: {list}. Press A, B, C or D or click an answer.", noLl: "No lifelines. Press A, B, C or D or click an answer.",
+    fifty: "50:50", phone: "Phone a Friend", audience: "Ask the Audience", extra: "Extra life",
+    startBtn: "▶ START THE GAME", startNote: "Questions come from {link} on this computer (multiple-choice and true/false). Change them with ⚙ Admin.", link: "ChemQuiz Live → My quizzes",
+    tooFew: "This quiz has only {n} multiple-choice or true/false questions; the game needs at least {min}.", skipped: "{n} number / gap-fill question(s) are skipped in this game.",
+    ladderMoney: "MONEY LADDER", ladderPoints: "POINTS LADDER", ladderPlain: "LADDER", safeNote: "◆ Safe havens: {list}", noSafe: "No safe havens",
+    qmeta: "Question {n} <span>of {N} · for {amt}</span>",
+    finalQ: "Is that your final answer?", yes: "YES — LOCK IT IN", no: "NO, LET ME THINK",
+    phoneTitle: "📞 Phone a Friend", calling: "Calling your friend {name}…", thanks: "THANKS, BACK TO THE GAME",
+    sure: ["I'm pretty sure", "I studied this last week —", "Easy one!", "I'd go with"], unsure: ["Hmm… I think", "Not 100% sure, but maybe", "I'm guessing a bit here —"], phoneMsg: "{lead} it's {L}: {ans}.",
+    audTitle: "📊 Ask the Audience", back: "BACK TO THE GAME",
+    locking: "Locking it in…", correctT: "Correct! {amt}", safeHaven: " — SAFE HAVEN!", timeUp: "⏰ Time's up!", extraUsed: "❤ Extra life used — try again!", wrongNext: "Not quite — next question",
+    champion: "CHEMISTRY CHAMPION!", gameOver: "GAME OVER", practiceDone: "PRACTICE COMPLETE", timeRanOut: "Time ran out on Question {n}.", wrongOn: "Wrong answer on Question {n}.",
+    correctWas: "The correct answer was", totalWon: "Total won", kept: "You kept your safe haven winnings.", notReached: "You did not reach a safe haven.",
+    score: "Score: {c} / {n} — {r}", restartBtn: "↻ RESTART", teacherBtn: "👩‍🏫 TEACHER MODE",
+    keyTitle: "🏆 Answer Key – Teacher's Copy", question: "Question", correctAns: "Correct answer", scoring: "⭐ Scoring", correctAnswers: "Correct answers", result: "Result", close: "CLOSE",
+    ratings: ["Chemistry Genius! 🥇", "Excellent!", "Very Good!", "Good!", "Keep Practising!"],
+    pinTitle: "🔒 Admin PIN", pinWrong: "Wrong PIN.", cancel: "CANCEL",
+    // admin
+    adminTitle: "⚙ Admin – game settings", done: "Done", saved: "Saved.",
+    tGeneral: "General", tQuestions: "Questions", tLadder: "Ladder", tRules: "Rules", tHelpers: "Lifeline helpers", tLook: "Look & sound", tResults: "Results", tSecurity: "PIN & backup",
+    language: "Language", aLabel: "Small label above the title", aTitle: "Game title", aBrand: "Name at the top left", aSub: "Subtitle at the top left", blankDefault: "Leave empty for the default text.", subHint: "Use {n} for the number of questions.",
+    aQuiz: "Quiz to edit", newQuiz: "+ New quiz", delQuiz: "Delete quiz", quizTitle: "Quiz title", addMc: "+ Multiple choice", addTf: "+ True / False", saveQuiz: "Save quiz",
+    mc: "Multiple choice", tf: "True / False", qText: "Question text", answerX: "Answer {L}", optional: " (optional)", tickCorrect: "Tick the correct answer. Leave C or D empty for fewer answers.",
+    topic: "Topic", page: "Book page", time: "Time (s)", trueT: "True", falseT: "False", isCorrect: "{x} is correct",
+    roNote: "{type} question – edit it in ChemQuiz Live (it is skipped in this game).", num: "Number", gap: "Gap fill",
+    errText: "Write the question text.", errTwo: "Give at least two answers.", errTick: "Tick the correct answer (it must not be empty).", errFix: "Fix the questions marked in red, then save again.", errTitle: "Give the quiz a title.",
+    quizSaved: "Quiz saved – it is also in ChemQuiz Live → My quizzes.", confirmDelQuiz: "Delete the quiz “{t}”? This cannot be undone.", confirmDelQ: "Delete question {n}?", unsaved: "You have unsaved question changes. Discard them?", newQuizName: "New quiz",
+    builtinNote: "This is the built-in quiz. Saving creates your own editable copy in the library.",
+    unit: "Prize unit", uNone: "No unit (numbers only)", uPoints: "Points", uMkd: "Denars (ден.)", uEur: "Euro (€)", uUsd: "Dollar ($)", uCustom: "Custom", unitText: "Custom unit text", unitPos: "Position", before: "Before the number", after: "After the number",
+    ladderHint: "Prize for each question in a 20-question game. Tick ◆ for safe havens. Shorter games use a shortened ladder automatically.", qcol: "Question", prize: "Prize", safe: "◆ Safe", resetLadder: "Reset ladder", preview: "Preview",
+    timerDefault: "Default time per question", useQTime: "Use a question's own time if it has one", confirmOn: "Ask “Is that your final answer?”", suspense: "Suspense pause before the answer is revealed", sec: "{n} s",
+    onWrong: "When the answer is wrong", wrongEnd: "Game over (classic)", wrongCont: "Practice: show the answer and continue", lifelines: "Lifelines", extraHint: "Extra life: the first wrong answer does not count; the student tries again.",
+    friends: "Friends' names for “Phone a Friend”", friendsHint: "One per line or separated by commas – for example your students' names.", friendAcc: "How often the friend is right", audAcc: "How often the audience favours the right answer",
+    sound: "Sound effects", volume: "Volume", confetti: "Confetti on a win", theme: "Colour theme", thClassic: "Classic purple", thOcean: "Ocean blue", thEmerald: "Emerald", thCrimson: "Crimson", testSound: "Test sound",
+    histOn: "Save every finished game in the results history", histEmpty: "No games saved yet.", date: "Date", playerC: "Player / team", wonC: "Won", outcome: "Outcome", oWin: "Champion", oLose: "Game over", oPractice: "Practice",
+    exportXlsx: "Download Excel", clearHist: "Clear history", confirmClear: "Delete all saved results?", nGames: "{n} games saved on this computer.",
+    pinSet: "Admin PIN", pinHint: "With a PIN, students cannot open ⚙ Admin by accident. It is simple protection on this computer, not real security.", newPin: "New PIN (4–12 digits)", setPin: "Save PIN", removePin: "Remove PIN", pinOn: "A PIN is set.", pinOff: "No PIN is set.", pinBad: "Use 4 to 12 digits.", pinSaved: "PIN saved.", pinRemoved: "PIN removed.",
+    backup: "Backup", backupHint: "Saves all settings (and optionally the results history) to a file, to keep or to move to another computer.", exportSet: "Export settings", inclHist: "Include results history", importSet: "Import settings", resetAll: "Reset all settings", confirmReset: "Reset all game settings to the defaults? (Quizzes and results stay.)", imported: "Settings imported.", badFile: "This file is not a Chemistry Champion settings file.",
+  },
+  mk: {
+    fullscreen: "⛶ Цел екран", restart: "↻ Од почеток", admin: "⚙ Админ",
+    label: "КВИЗ ЗА ЧАС", title: "Кој сака да биде<br>шампион по хемија?", brand: "Шампион по хемија", challenge: "Предизвик од {n} прашања",
+    quiz: "Квиз", questions: "Прашања", timePer: "Време по прашање", player: "Играч или тим (опционално)", randomOrder: "Случаен редослед на прашањата",
+    allN: "Сите {n} прашања", randN: "{n} случајни прашања", secs: "{n} секунди", challengeTag: " (предизвик)", noTimer: "Без тајмер",
+    startInfo: "{n} прашања · искачи се до {top}", safeInfo: " · безбедни зони: {list}", qn: "прашање {n}", and: "и",
+    llInfo: "Помош: {list}. Притисни A, B, C или D или кликни на одговор.", noLl: "Без помош. Притисни A, B, C или D или кликни на одговор.",
+    fifty: "50:50", phone: "Повикај пријател", audience: "Прашај ја публиката", extra: "Дополнителен живот",
+    startBtn: "▶ ЗАПОЧНИ ЈА ИГРАТА", startNote: "Прашањата се од {link} на овој компјутер (со избор и точно/неточно). Се менуваат преку ⚙ Админ.", link: "ChemQuiz Live → Мои квизови",
+    tooFew: "Овој квиз има само {n} прашања со избор или точно/неточно; играта бара најмалку {min}.", skipped: "{n} прашања со број / дополнување се прескокнуваат во оваа игра.",
+    ladderMoney: "СКАЛИЛО НА НАГРАДИ", ladderPoints: "СКАЛИЛО НА ПОЕНИ", ladderPlain: "СКАЛИЛО", safeNote: "◆ Безбедни зони: {list}", noSafe: "Без безбедни зони",
+    qmeta: "Прашање {n} <span>од {N} · за {amt}</span>",
+    finalQ: "Дали е тоа твојот конечен одговор?", yes: "ДА — ЗАКЛУЧИ", no: "НЕ, ДАЈ ДА РАЗМИСЛАМ",
+    phoneTitle: "📞 Повикај пријател", calling: "Се јавуваш на {name}…", thanks: "БЛАГОДАРАМ, НАЗАД ВО ИГРАТА",
+    sure: ["Сигурен сум,", "Го учев ова минатата недела —", "Лесно!", "Јас би одбрал"], unsure: ["Хмм… мислам дека", "Не сум 100% сигурен, но можеби", "Малку погодувам —"], phoneMsg: "{lead} одговорот е {L}: {ans}.",
+    audTitle: "📊 Прашај ја публиката", back: "НАЗАД ВО ИГРАТА",
+    locking: "Се заклучува…", correctT: "Точно! {amt}", safeHaven: " — БЕЗБЕДНА ЗОНА!", timeUp: "⏰ Времето истече!", extraUsed: "❤ Искористен е дополнителниот живот — обиди се пак!", wrongNext: "Неточно — следно прашање",
+    champion: "ШАМПИОН ПО ХЕМИЈА!", gameOver: "КРАЈ НА ИГРАТА", practiceDone: "ВЕЖБАТА Е ЗАВРШЕНА", timeRanOut: "Времето истече на прашање {n}.", wrongOn: "Погрешен одговор на прашање {n}.",
+    correctWas: "Точниот одговор беше", totalWon: "Вкупно освоено", kept: "Ја задржа наградата од безбедната зона.", notReached: "Не стигна до безбедна зона.",
+    score: "Резултат: {c} / {n} — {r}", restartBtn: "↻ ОД ПОЧЕТОК", teacherBtn: "👩‍🏫 ЗА НАСТАВНИКОТ",
+    keyTitle: "🏆 Клуч со одговори – за наставникот", question: "Прашање", correctAns: "Точен одговор", scoring: "⭐ Оценување", correctAnswers: "Точни одговори", result: "Резултат", close: "ЗАТВОРИ",
+    ratings: ["Генијалец по хемија! 🥇", "Одлично!", "Многу добро!", "Добро!", "Вежбај уште!"],
+    pinTitle: "🔒 Админ PIN", pinWrong: "Погрешен PIN.", cancel: "ОТКАЖИ",
+    adminTitle: "⚙ Админ – поставки на играта", done: "Готово", saved: "Зачувано.",
+    tGeneral: "Општо", tQuestions: "Прашања", tLadder: "Скалило", tRules: "Правила", tHelpers: "Помош", tLook: "Изглед и звук", tResults: "Резултати", tSecurity: "PIN и резервна копија",
+    language: "Јазик", aLabel: "Мал натпис над насловот", aTitle: "Наслов на играта", aBrand: "Име горе лево", aSub: "Поднаслов горе лево", blankDefault: "Остави празно за стандардниот текст.", subHint: "Користи {n} за бројот на прашања.",
+    aQuiz: "Квиз за уредување", newQuiz: "+ Нов квиз", delQuiz: "Избриши квиз", quizTitle: "Наслов на квизот", addMc: "+ Со избор", addTf: "+ Точно / Неточно", saveQuiz: "Зачувај квиз",
+    mc: "Со избор (A–D)", tf: "Точно / Неточно", qText: "Текст на прашањето", answerX: "Одговор {L}", optional: " (опционално)", tickCorrect: "Означи го точниот одговор. Остави C или D празно за помалку одговори.",
+    topic: "Тема", page: "Страна", time: "Време (с)", trueT: "Точно", falseT: "Неточно", isCorrect: "{x} е точно",
+    roNote: "Прашање „{type}“ – уреди го во ChemQuiz Live (се прескокнува во оваа игра).", num: "Број", gap: "Дополнување",
+    errText: "Напиши го текстот на прашањето.", errTwo: "Внеси најмалку два одговора.", errTick: "Означи го точниот одговор (не смее да е празен).", errFix: "Поправи ги прашањата означени со црвено, па зачувај повторно.", errTitle: "Дај наслов на квизот.",
+    quizSaved: "Квизот е зачуван – го има и во ChemQuiz Live → Мои квизови.", confirmDelQuiz: "Да се избрише квизот „{t}“? Ова не може да се врати.", confirmDelQ: "Да се избрише прашање {n}?", unsaved: "Имаш незачувани промени во прашањата. Да се отфрлат?", newQuizName: "Нов квиз",
+    builtinNote: "Ова е вградениот квиз. Со зачувување се прави твоја копија во библиотеката што може да се уредува.",
+    unit: "Единица за наградата", uNone: "Без единица (само броеви)", uPoints: "Поени", uMkd: "Денари (ден.)", uEur: "Евра (€)", uUsd: "Долари ($)", uCustom: "Друго", unitText: "Текст на единицата", unitPos: "Позиција", before: "Пред бројот", after: "По бројот",
+    ladderHint: "Награда за секое прашање во игра од 20 прашања. Означи ◆ за безбедни зони. Пократките игри автоматски користат скратено скалило.", qcol: "Прашање", prize: "Награда", safe: "◆ Безбедна", resetLadder: "Врати го скалилото", preview: "Преглед",
+    timerDefault: "Стандардно време по прашање", useQTime: "Користи го времето на прашањето ако е зададено", confirmOn: "Прашај „Дали е тоа твојот конечен одговор?“", suspense: "Пауза пред откривање на одговорот", sec: "{n} с",
+    onWrong: "Кога одговорот е погрешен", wrongEnd: "Крај на играта (класично)", wrongCont: "Вежба: покажи го одговорот и продолжи", lifelines: "Помош", extraHint: "Дополнителен живот: првиот погрешен одговор не се брои; ученикот се обидува пак.",
+    friends: "Имиња на пријатели за „Повикај пријател“", friendsHint: "Едно во ред или одделени со запирка – на пример имињата на учениците.", friendAcc: "Колку често пријателот е во право", audAcc: "Колку често публиката го претпочита точниот одговор",
+    sound: "Звучни ефекти", volume: "Јачина", confetti: "Конфети при победа", theme: "Боја на темата", thClassic: "Класична виолетова", thOcean: "Океанско сина", thEmerald: "Смарагдна", thCrimson: "Темноцрвена", testSound: "Пробај звук",
+    histOn: "Зачувај ја секоја завршена игра во историјата на резултати", histEmpty: "Сè уште нема зачувани игри.", date: "Датум", playerC: "Играч / тим", wonC: "Освоено", outcome: "Исход", oWin: "Шампион", oLose: "Крај", oPractice: "Вежба",
+    exportXlsx: "Преземи Excel", clearHist: "Избриши историја", confirmClear: "Да се избришат сите зачувани резултати?", nGames: "{n} игри зачувани на овој компјутер.",
+    pinSet: "Админ PIN", pinHint: "Со PIN, учениците не можат случајно да го отворат ⚙ Админ. Ова е едноставна заштита на овој компјутер, не вистинска безбедност.", newPin: "Нов PIN (4–12 цифри)", setPin: "Зачувај PIN", removePin: "Отстрани PIN", pinOn: "Поставен е PIN.", pinOff: "Нема PIN.", pinBad: "Користи од 4 до 12 цифри.", pinSaved: "PIN-от е зачуван.", pinRemoved: "PIN-от е отстранет.",
+    backup: "Резервна копија", backupHint: "Ги зачувува сите поставки (и по избор историјата на резултати) во датотека, за чување или пренос на друг компјутер.", exportSet: "Извези поставки", inclHist: "Вклучи ја историјата на резултати", importSet: "Увези поставки", resetAll: "Врати ги сите поставки", confirmReset: "Да се вратат сите поставки на стандардните? (Квизовите и резултатите остануваат.)", imported: "Поставките се увезени.", badFile: "Оваа датотека не е датотека со поставки за Шампион по хемија.",
+  },
+};
+const THEMES = {
+  classic: { bg1: "#05061a", bg2: "#120a3a", bg3: "#23125e", bg4: "#3a1a8c", line: "#6a8cff", hex1: "#1b2373", hex2: "#070b3b" },
+  ocean:   { bg1: "#020d17", bg2: "#06283d", bg3: "#0b4a6b", bg4: "#1479a3", line: "#4fd1ff", hex1: "#0e4a6e", hex2: "#04192a" },
+  emerald: { bg1: "#03140d", bg2: "#073826", bg3: "#0c5a3c", bg4: "#15885a", line: "#5ef0b0", hex1: "#0f5a3e", hex2: "#04241a" },
+  crimson: { bg1: "#160308", bg2: "#3d0a16", bg3: "#651227", bg4: "#9c1f3c", line: "#ff7a9c", hex1: "#6b1a2e", hex2: "#260710" },
+};
+
+// ===================== SETTINGS =====================
+const DEFAULTS = {
+  lang: "en", label: "", title: "", brand: "", subtitle: "",
+  unit: { mode: "none", text: "", pos: "after" }, ladder: DEFAULT_LADDER.slice(), safe: [4, 9],
+  timer: 10, useQTime: true, confirm: true, suspense: 2.2, onWrong: "end",
+  ll: { fifty: true, phone: true, audience: true, extra: false },
+  friends: "Maria, Luka, Elena, Stefan, Ana, David, Sara, Marko", friendAcc: 80, audAcc: 100,
+  sound: true, volume: 80, confetti: true, theme: "classic", history: true, pin: "",
+};
+let CFG = loadCfg();
+function loadCfg() {
+  let c = {};
+  try { c = JSON.parse(localStorage.getItem(CFG_KEY)) || {}; } catch (e) {}
+  return mergeCfg(c);
+}
+function mergeCfg(c) {
+  const d = JSON.parse(JSON.stringify(DEFAULTS));
+  const o = Object.assign(d, c || {});
+  o.unit = Object.assign({}, DEFAULTS.unit, (c && c.unit) || {});
+  o.ll = Object.assign({}, DEFAULTS.ll, (c && c.ll) || {});
+  if (!Array.isArray(o.ladder) || o.ladder.length !== 20 || o.ladder.some((v) => !(+v >= 0))) o.ladder = DEFAULT_LADDER.slice();
+  o.ladder = o.ladder.map(Number);
+  if (!Array.isArray(o.safe)) o.safe = [4, 9];
+  o.safe = o.safe.map(Number).filter((i) => i >= 0 && i < 19);
+  if (!T[o.lang]) o.lang = "en";
+  if (!THEMES[o.theme]) o.theme = "classic";
+  return o;
+}
+let cfgOk = true;
+function saveCfg() { try { localStorage.setItem(CFG_KEY, JSON.stringify(CFG)); cfgOk = true; } catch (e) { cfgOk = false; } }
 
 const $ = (id) => document.getElementById(id);
-const fmt = (n) => n.toLocaleString("en-US");
-const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+function t(k, v) {
+  let s = T[CFG.lang][k]; if (s === undefined) s = T.en[k]; if (s === undefined) return k;
+  if (v && typeof s === "string") s = s.replace(/\{(\w+)\}/g, (m, x) => (v[x] !== undefined ? v[x] : m));
+  return s;
+}
+const fmtNum = (n) => String(Math.round(Number(n) || 0)).replace(/\B(?=(\d{3})+(?!\d))/g, CFG.lang === "mk" ? "." : ",");
+function unitParts() {
+  const u = CFG.unit;
+  switch (u.mode) {
+    case "points": return ["", CFG.lang === "mk" ? " поени" : " pts"];
+    case "mkd": return ["", " ден."];
+    case "eur": return ["€", ""];
+    case "usd": return ["$", ""];
+    case "custom": return u.pos === "before" ? [u.text || "", ""] : ["", u.text ? " " + u.text : ""];
+    default: return ["", ""];
+  }
+}
+const fmt = (n) => { const [a, b] = unitParts(); return a + fmtNum(n) + b; };
+function listJoin(arr) { return arr.length <= 1 ? arr.join("") : arr.slice(0, -1).join(", ") + " " + t("and") + " " + arr[arr.length - 1]; }
+function applyTheme() {
+  const th = THEMES[CFG.theme], r = document.documentElement.style;
+  Object.entries(th).forEach(([k, v]) => r.setProperty("--" + k, v));
+}
+function hashPin(p) { let h = 2166136261; for (const ch of "cc|" + p) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return (h >>> 0).toString(36); }
+function friendList() { const f = String(CFG.friends || "").split(/[\n,;]+/).map((s) => s.trim()).filter(Boolean); return f.length ? f : ["Maria"]; }
 
 // ===================== QUIZ LIBRARY (shared with ChemQuiz Live) =====================
-function loadQuizzes() {
-  let lib = null;
-  try { lib = JSON.parse(localStorage.getItem("chemquiz-library-v1")); } catch (e) {}
-  const list = [];
-  if (Array.isArray(lib)) lib.forEach((z) => {
-    const qs = (z.qs || []).filter((q) => (q.t === "mc" || q.t === "tf") && Array.isArray(q.a) && q.a.length >= 2 && q.c >= 0 && q.c < q.a.length && q.q)
-      .map((q) => ({ part: (q.topic || "").toUpperCase(), q: q.q, a: q.a.slice(0, 4), c: q.c }));
-    list.push({ id: z.id, title: z.title, qs, skipped: (z.qs || []).length - qs.length });
-  });
-  if (!list.some((z) => z.id === BUILTIN_ID)) list.unshift({ id: BUILTIN_ID, title: "Chemistry Champion – 20 questions", qs: BUILTIN, skipped: 0 });
+const uid = () => "z" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+function readLib() { try { const v = JSON.parse(localStorage.getItem(LIB_KEY)); if (Array.isArray(v)) return v; } catch (e) {} return null; }
+function writeLib(lib) { try { localStorage.setItem(LIB_KEY, JSON.stringify(lib)); return true; } catch (e) { return false; } }
+const sentence = (s) => s.charAt(0) + s.slice(1).toLowerCase();
+function builtinQuiz() {
+  return { id: BUILTIN_ID, title: BUILTIN_TITLE, updated: Date.now(), qs: BUILTIN.map((x) => ({ t: "mc", q: x.q, a: x.a.slice(), c: x.c, topic: sentence(x.part.split("– ")[1] || "") })) };
+}
+function allQuizzes() {   // full quizzes (all question types), library first
+  const lib = readLib() || [];
+  const list = lib.filter((z) => z && Array.isArray(z.qs));
+  if (!list.some((z) => z.id === BUILTIN_ID)) list.unshift(builtinQuiz());
   return list;
+}
+const playable = (q) => (q.t === "mc" || q.t === "tf") && Array.isArray(q.a) && q.a.length >= 2 && q.c >= 0 && q.c < q.a.length && q.q;
+function loadQuizzes() {
+  return allQuizzes().map((z) => {
+    const qs = z.qs.filter(playable).map((q) => ({ t: q.t, part: (q.topic || "").toUpperCase(), q: q.q, a: q.a.slice(0, 4), c: q.c, time: q.time || 0 }));
+    return { id: z.id, title: z.title, qs, skipped: z.qs.length - qs.length };
+  });
 }
 let QUIZZES = [];
 function fillQuizSelect() {
@@ -395,44 +643,90 @@ function fillQuizSelect() {
   const want = new URLSearchParams(location.search).get("quiz");
   const prev = $("quizSel").value;
   $("quizSel").innerHTML = QUIZZES.map((z) => `<option value="${esc(z.id)}">${esc(z.title)} (${z.qs.length})</option>`).join("");
-  const pick = [want, prev].find((id) => id && QUIZZES.some((z) => z.id === id));
+  const pick = [prev, want].find((id) => id && QUIZZES.some((z) => z.id === id));
   if (pick) $("quizSel").value = pick;
   onQuizChange();
 }
 function currentQuiz() { return QUIZZES.find((z) => z.id === $("quizSel").value) || QUIZZES[0]; }
 function onQuizChange() {
-  const z = currentQuiz(), n = z.qs.length;
+  const z = currentQuiz(), n = z.qs.length, prev = +$("countSel").value;
   const opts = [];
-  if (n <= MAX_Q) opts.push([n, `All ${n} questions`]);
-  [5, 10, 15, 20].filter((k) => k < n && k >= MIN_Q).forEach((k) => opts.push([k, `${k} random questions`]));
-  $("countSel").innerHTML = opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
-  $("countSel").value = String(Math.min(n, MAX_Q));
+  if (n <= MAX_Q) opts.push([n, t("allN", { n })]);
+  [5, 10, 15, 20].filter((k) => k < n && k >= MIN_Q).forEach((k) => opts.push([k, t("randN", { n: k })]));
+  $("countSel").innerHTML = opts.map(([v, s]) => `<option value="${v}">${s}</option>`).join("");
+  $("countSel").value = String(opts.some((o) => o[0] === prev) ? prev : Math.min(n, MAX_Q));
   updateStartInfo();
 }
+
+// ===================== LADDER / RATINGS =====================
+let QUESTIONS = [], LADDER = DEFAULT_LADDER.slice(), SAFE = [4, 9], TIME_LIMIT = 10, SCORING = [];
+const RATING_STEPS = [0.9, 0.75, 0.6, 0.45, 0];
 function planLadder(n) {
-  // spread the 20 prize steps over n questions; safe havens at about 1/4 and 1/2 of the way
-  LADDER = n === FULL_LADDER.length ? FULL_LADDER.slice() : Array.from({ length: n }, (_, i) => FULL_LADDER[Math.round((i * (FULL_LADDER.length - 1)) / (n - 1))]);
-  SAFE = [Math.max(0, Math.round(n / 4) - 1), Math.max(1, Math.round(n / 2) - 1)];
-  // rating bands as numbers of correct answers
-  SCORING = RATINGS.map((r, i) => {
-    const min = Math.ceil(r[0] * n - 1e-9), max = i === 0 ? n : Math.ceil(RATINGS[i - 1][0] * n - 1e-9) - 1;
-    return { min, max, label: r[1] };
+  n = Math.max(2, n);
+  LADDER = n === 20 ? CFG.ladder.slice() : Array.from({ length: n }, (_, i) => CFG.ladder[Math.round((i * 19) / (n - 1))]);
+  SAFE = [...new Set(CFG.safe.map((s) => (n === 20 ? s : Math.round((s * (n - 1)) / 19))))].filter((i) => i >= 0 && i < n - 1).sort((a, b) => a - b);
+  const labels = t("ratings");
+  SCORING = RATING_STEPS.map((r, i) => {
+    const min = Math.ceil(r * n - 1e-9), max = i === 0 ? n : Math.ceil(RATING_STEPS[i - 1] * n - 1e-9) - 1;
+    return { min, max, label: labels[i] };
   }).filter((s) => s.min <= s.max);
 }
+const safeList = () => listJoin(SAFE.map((i) => t("qn", { n: i + 1 })));
+function ladderTitle() { const m = CFG.unit.mode; return t(m === "points" ? "ladderPoints" : m === "none" ? "ladderPlain" : "ladderMoney"); }
+
+// ===================== START SCREEN / LANGUAGE =====================
+function llNames() {
+  return [["fifty", "fifty"], ["phone", "phone"], ["audience", "audience"], ["extra", "extra"]].filter(([k]) => CFG.ll[k]).map(([, n]) => t(n));
+}
+function fillTimeSelect() {
+  const vals = [10, 15, 20, 30, 45, 60];
+  if (CFG.timer > 0 && !vals.includes(+CFG.timer)) vals.push(+CFG.timer), vals.sort((a, b) => a - b);
+  const keep = $("timeSel").dataset.touched ? $("timeSel").value : String(CFG.timer);
+  $("timeSel").innerHTML = vals.map((v) => `<option value="${v}">${t("secs", { n: v })}${v === 10 ? t("challengeTag") : ""}</option>`).join("") + `<option value="0">${t("noTimer")}</option>`;
+  $("timeSel").value = [...$("timeSel").options].some((o) => o.value === keep) ? keep : String(CFG.timer);
+}
 function updateStartInfo() {
-  const z = currentQuiz(), n = Math.min(+$("countSel").value || 0, z.qs.length);
+  const z = currentQuiz(); if (!z) return;
+  const n = Math.min(+$("countSel").value || 0, z.qs.length);
   const warn = $("startWarn");
   if (z.qs.length < MIN_Q) {
-    warn.hidden = false; warn.textContent = `This quiz has only ${z.qs.length} multiple-choice or true/false question${z.qs.length === 1 ? "" : "s"}; the game needs at least ${MIN_Q}.`;
+    warn.hidden = false; warn.textContent = t("tooFew", { n: z.qs.length, min: MIN_Q });
     $("startBtn").disabled = true; $("startInfo").textContent = ""; return;
   }
   $("startBtn").disabled = false;
-  warn.hidden = !z.skipped;
-  warn.textContent = z.skipped ? `${z.skipped} number / gap-fill question${z.skipped === 1 ? " is" : "s are"} skipped in this game.` : "";
+  warn.hidden = !z.skipped; warn.textContent = z.skipped ? t("skipped", { n: z.skipped }) : "";
   planLadder(n);
-  $("startInfo").innerHTML = `${n} questions · climb the ladder to <b style="color:var(--gold)">1,000,000</b> · safe havens at Question ${SAFE[0] + 1} and Question ${SAFE[1] + 1}`;
+  $("startInfo").innerHTML = t("startInfo", { n, top: `<b style="color:var(--gold)">${esc(fmt(LADDER[LADDER.length - 1]))}</b>` }) + (SAFE.length ? t("safeInfo", { list: safeList() }) : "");
 }
+function renderStart() {
+  $("startLabel").textContent = CFG.label || t("label");
+  $("startTitle").innerHTML = CFG.title ? esc(CFG.title) : t("title");
+  $("brandName").textContent = CFG.brand || t("brand");
+  const ll = llNames();
+  $("llInfo").textContent = ll.length ? t("llInfo", { list: ll.join(", ") }) : t("noLl");
+  $("startNote").innerHTML = t("startNote", { link: `<a href="../" target="_blank" rel="noopener">${esc(t("link"))}</a>` });
+  document.querySelectorAll(".langsw button").forEach((b) => b.classList.toggle("on", b.dataset.lang === CFG.lang));
+  fillTimeSelect();
+  if (QUIZZES.length) onQuizChange();
+}
+function applyLang() {
+  document.documentElement.lang = CFG.lang;
+  document.querySelectorAll("[data-i]").forEach((el) => (el.textContent = t(el.dataset.i)));
+  $("llPhone").title = t("phone"); $("llAudience").title = t("audience"); $("llExtra").title = t("extra");
+  $("ladderTitle").textContent = ladderTitle();
+  document.title = (CFG.brand || t("brand")) + " – " + (CFG.lang === "mk" ? "квиз" : "quiz");
+  renderStart();
+}
+function applyAll() {
+  applyTheme(); applyLang();
+  $("ll5050").style.display = CFG.ll.fifty ? "" : "none";
+  $("llPhone").style.display = CFG.ll.phone ? "" : "none";
+  $("llAudience").style.display = CFG.ll.audience ? "" : "none";
+  $("llExtra").hidden = !CFG.ll.extra;
+}
+
 function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+let GAME = { quiz: "", player: "", token: 0 };
 function prepareGame() {
   const z = currentQuiz(), n = Math.min(+$("countSel").value, z.qs.length);
   let idx = z.qs.map((_, i) => i);
@@ -440,24 +734,33 @@ function prepareGame() {
   else if ($("shuffleChk").checked) shuffle(idx);
   QUESTIONS = idx.map((i) => z.qs[i]);
   planLadder(QUESTIONS.length);
-  TIME_LIMIT = +$("timeSel").value || 10;
-  timerOn = +$("timeSel").value > 0;
-  $("brandSub").textContent = `The ${QUESTIONS.length}-Question Challenge`;
-  $("ladderNote").textContent = `◆ Safe havens: Question ${SAFE[0] + 1} and Question ${SAFE[1] + 1}`;
-  $("timerNum").textContent = TIME_LIMIT;
+  TIME_LIMIT = +$("timeSel").value;
+  timerOn = TIME_LIMIT > 0;
+  GAME.quiz = z.title; GAME.player = $("playerIn").value.trim(); GAME.token++;
+  $("brandSub").textContent = (CFG.subtitle || t("challenge")).replace("{n}", QUESTIONS.length);
+  $("ladderTitle").textContent = ladderTitle();
+  $("ladderNote").textContent = SAFE.length ? t("safeNote", { list: SAFE.map((i) => i + 1).join(", ") }) : t("noSafe");
   buildLadder();
 }
+
+// ===================== STATE =====================
+let cur = 0, correctCount = 0, locked = false, hidden = [], usedLL = {}, selected = -1;
+let timerOn = true, timeLeft = 10, curLimit = 10, timerId = null, timerPaused = false, lastTick = 0;
+let history = [];   // per question: chosen index or -1 (timeout) / undefined
+const later = (fn, ms) => { const tok = GAME.token; setTimeout(() => { if (tok === GAME.token) fn(); }, ms); };
+const ansLabel = (Q, k) => (Q.t === "tf" ? [t("trueT"), t("falseT")][k] : Q.a[k]);
 
 // ===================== SOUND (generated, works offline) =====================
 let actx = null;
 function tone(freq, dur, type = "sine", vol = 0.15, delay = 0) {
+  if (!CFG.sound) return;
   try {
     actx = actx || new (window.AudioContext || window.webkitAudioContext)();
     const o = actx.createOscillator(), g = actx.createGain();
     o.type = type; o.frequency.value = freq;
-    const t = actx.currentTime + delay;
-    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur + 0.05);
+    const tt = actx.currentTime + delay, v = Math.max(0.0005, vol * (CFG.volume / 100));
+    g.gain.setValueAtTime(0, tt); g.gain.linearRampToValueAtTime(v, tt + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, tt + dur);
+    o.connect(g); g.connect(actx.destination); o.start(tt); o.stop(tt + dur + 0.05);
   } catch (e) {}
 }
 const sfx = {
@@ -475,14 +778,13 @@ function buildLadder() {
     const li = document.createElement("li");
     li.className = "rung" + (SAFE.includes(i) ? " safe" : "") + (i === LADDER.length - 1 ? " top safe" : "");
     li.id = "rung" + i;
-    li.innerHTML = `<span class="n">${i + 1}</span><span class="amt">${fmt(v)}</span>`;
+    li.innerHTML = `<span class="n">${i + 1}</span><span class="amt">${esc(fmt(v))}</span>`;
     ol.appendChild(li);
   });
 }
 function updateLadder() {
   LADDER.forEach((_, i) => {
-    const r = $("rung" + i);
-    if (!r) return;
+    const r = $("rung" + i); if (!r) return;
     r.classList.toggle("current", i === cur);
     r.classList.toggle("done", i < cur);
   });
@@ -491,32 +793,35 @@ function updateLadder() {
 function showQuestion() {
   locked = false; selected = -1; hidden = [];
   const Q = QUESTIONS[cur];
-  $("qmeta").innerHTML = `Question ${cur + 1} <span>of ${QUESTIONS.length} · for ${fmt(LADDER[cur])}</span>`;
+  $("qmeta").innerHTML = t("qmeta", { n: cur + 1, N: QUESTIONS.length, amt: esc(fmt(LADDER[cur])) });
   $("question").textContent = Q.q;
   const box = $("answers"); box.innerHTML = "";
   box.classList.remove("suspense");
-  Q.a.forEach((txt, i) => {
+  Q.a.forEach((_, i) => {
     const d = document.createElement("div");
     d.className = "answer"; d.dataset.i = i;
-    d.innerHTML = `<div class="hexwrap"><div class="hex"><span class="letter">${LETTERS[i]}:</span><span>${esc(txt)}</span></div></div>`;
+    d.innerHTML = `<div class="hexwrap"><div class="hex"><span class="letter">${LETTERS[i]}:</span><span>${esc(ansLabel(Q, i))}</span></div></div>`;
     d.onclick = () => choose(i);
     box.appendChild(d);
   });
   updateLadder();
   ["ll5050", "llPhone", "llAudience"].forEach((id) => ($(id).disabled = !!usedLL[id]));
   if (Q.a.length < 3) $("ll5050").disabled = true;   // nothing to remove on a 2-answer question
+  $("llExtra").classList.toggle("used", !!usedLL.extra);
   startTimer();
 }
 
 // ===================== TIMER =====================
 function startTimer() {
   stopTimer();
-  timeLeft = TIME_LIMIT; timerPaused = false;
+  const Q = QUESTIONS[cur];
+  curLimit = CFG.useQTime && Q.time ? Q.time : TIME_LIMIT || 10;
+  timeLeft = curLimit; timerPaused = false;
   $("timerwrap").style.visibility = timerOn ? "visible" : "hidden";
   renderTimer();
   if (!timerOn) return;
   lastTick = performance.now();
-  let lastSec = TIME_LIMIT;
+  let lastSec = curLimit;
   timerId = setInterval(() => {
     const now = performance.now();
     if (!timerPaused) {
@@ -533,7 +838,7 @@ function startTimer() {
 function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
 function pauseTimer(p) { timerPaused = p; lastTick = performance.now(); }
 function renderTimer() {
-  const pct = Math.max(0, timeLeft / TIME_LIMIT) * 100;
+  const pct = Math.max(0, timeLeft / curLimit) * 100;
   const f = $("timerFill");
   f.style.width = pct + "%";
   f.style.backgroundPosition = (100 - pct) + "% 0";
@@ -549,8 +854,9 @@ function choose(i) {
   if (locked || hidden.includes(i) || anyModalOpen() || !QUESTIONS[cur] || i >= QUESTIONS[cur].a.length) return;
   selected = i;
   answerEls().forEach((el, k) => el.classList.toggle("selected", k === i));
+  if (!CFG.confirm) return lockAnswer(i);
   pauseTimer(true);
-  $("confirmChoice").innerHTML = `<b style="color:var(--orange)">${LETTERS[i]}:</b> ${esc(QUESTIONS[cur].a[i])}`;
+  $("confirmChoice").innerHTML = `<b style="color:var(--orange)">${LETTERS[i]}:</b> ${esc(ansLabel(QUESTIONS[cur], i))}`;
   $("confirmScreen").classList.add("show");
 }
 $("noBtn").onclick = () => {
@@ -569,30 +875,46 @@ function lockAnswer(i) {
   answerEls().forEach((el) => el.classList.add("locked"));
   $("answers").classList.add("suspense");
   sfx.lock();
-  toast("Locking it in…", 1900);
-  setTimeout(() => reveal(i), 2200);   // dramatic pause
+  const ms = Math.round((+CFG.suspense || 0) * 1000);
+  if (ms >= 800) toast(t("locking"), ms - 300);
+  later(() => reveal(i), ms);   // dramatic pause
+}
+
+function nextOrEnd(delay) {
+  if (cur === QUESTIONS.length - 1) later(() => endGame(CFG.onWrong === "continue" && correctCount < QUESTIONS.length ? "practice" : "win"), delay);
+  else later(() => { cur++; showQuestion(); }, delay);
 }
 
 function reveal(i) {
   $("answers").classList.remove("suspense");
   const Q = QUESTIONS[cur], els = answerEls();
-  history[cur] = i;
   if (i === Q.c) {
+    history[cur] = i;
     els[i].classList.remove("selected"); els[i].classList.add("correct");
     correctCount++;
     sfx.correct();
-    if (cur === QUESTIONS.length - 1) {
-      setTimeout(() => endGame(true), 1800);
-    } else {
-      toast(`Correct! ${fmt(LADDER[cur])}` + (SAFE.includes(cur) ? " — SAFE HAVEN!" : ""), 1600);
-      setTimeout(() => { cur++; showQuestion(); }, 2100);
-    }
-  } else {
-    if (i >= 0) { els[i].classList.remove("selected"); els[i].classList.add("wrong"); }
-    els[Q.c].classList.add("correct");
-    sfx.wrong();
-    setTimeout(() => endGame(false), 2800);
+    if (cur === QUESTIONS.length - 1) nextOrEnd(1800);
+    else { toast(t("correctT", { amt: fmt(LADDER[cur]) }) + (SAFE.includes(cur) && CFG.onWrong !== "continue" ? t("safeHaven") : ""), 1600); nextOrEnd(2100); }
+    return;
   }
+  // wrong answer (or -1 = time ran out)
+  if (i >= 0 && CFG.ll.extra && !usedLL.extra) {
+    usedLL.extra = true; $("llExtra").classList.add("used");
+    els[i].classList.remove("selected"); els[i].classList.add("wrong");
+    sfx.wrong(); toast(t("extraUsed"), 2000);
+    later(() => {
+      els[i].classList.remove("wrong"); els[i].classList.add("hidden"); hidden.push(i);
+      locked = false; els.forEach((el) => el.classList.remove("locked"));
+      startTimer();
+    }, 2000);
+    return;
+  }
+  history[cur] = i;
+  if (i >= 0) { els[i].classList.remove("selected"); els[i].classList.add("wrong"); }
+  els[Q.c].classList.add("correct");
+  sfx.wrong();
+  if (CFG.onWrong === "continue") { if (cur < QUESTIONS.length - 1) toast(t("wrongNext"), 1800); nextOrEnd(2800); }
+  else later(() => endGame("lose"), 2800);
 }
 
 function timeUp() {
@@ -600,63 +922,65 @@ function timeUp() {
   locked = true;
   closeModals();
   answerEls().forEach((el) => el.classList.add("locked"));
-  toast("⏰ Time's up!", 1800);
+  toast(t("timeUp"), 1800);
   reveal(-1);
 }
 
 // ===================== LIFELINES =====================
 function useLL(id) { usedLL[id] = true; $(id).disabled = true; }
 function remaining() { return QUESTIONS[cur].a.map((_, k) => k).filter((k) => !hidden.includes(k)); }
-function anyModalOpen() { return ["confirmScreen", "phoneScreen", "audienceScreen", "endScreen", "teacherScreen", "startScreen"].some((id) => $(id).classList.contains("show")); }
+function anyModalOpen() { return ["confirmScreen", "phoneScreen", "audienceScreen", "endScreen", "teacherScreen", "startScreen", "adminScreen", "pinScreen"].some((id) => $(id).classList.contains("show")); }
 
 $("ll5050").onclick = () => {
   const Q = QUESTIONS[cur];
-  if (locked || usedLL.ll5050 || anyModalOpen() || !Q || Q.a.length < 3) return;
+  if (!CFG.ll.fifty || locked || usedLL.ll5050 || anyModalOpen() || !Q) return;
+  const wrongs = remaining().filter((k) => k !== Q.c);
+  if (wrongs.length < 2) return;
   useLL("ll5050");
-  // keep the correct answer and one wrong answer
-  const wrong = shuffle(Q.a.map((_, k) => k).filter((k) => k !== Q.c)).slice(0, Q.a.length - 2);
-  hidden = wrong;
-  answerEls().forEach((el, k) => el.classList.toggle("hidden", wrong.includes(k)));
+  const hide = shuffle(wrongs).slice(0, wrongs.length - 1);   // keep the correct answer and one wrong answer
+  hidden = hidden.concat(hide);
+  answerEls().forEach((el, k) => el.classList.toggle("hidden", hidden.includes(k)));
   tone(660, 0.2, "triangle", 0.12); tone(440, 0.25, "triangle", 0.12, 0.15);
 };
 
-const FRIENDS = ["Maria", "Luka", "Elena", "Stefan", "Ana", "David", "Sara", "Marko"];
 $("llPhone").onclick = () => {
-  if (locked || usedLL.llPhone || anyModalOpen()) return;
+  if (!CFG.ll.phone || locked || usedLL.llPhone || anyModalOpen()) return;
   useLL("llPhone"); pauseTimer(true);
   const Q = QUESTIONS[cur], rem = remaining();
   let guess = Q.c;
-  if (Math.random() >= 0.8) {
+  if (Math.random() * 100 >= +CFG.friendAcc) {
     const wrongs = rem.filter((k) => k !== Q.c);
     if (wrongs.length) guess = wrongs[Math.floor(Math.random() * wrongs.length)];
   }
-  const sure = guess === Q.c ? ["I'm pretty sure", "I studied this last week —", "Easy one!", "I'd go with"] : ["Hmm… I think", "Not 100% sure, but maybe", "I'm guessing a bit here —"];
-  const lead = sure[Math.floor(Math.random() * sure.length)];
-  const name = FRIENDS[Math.floor(Math.random() * FRIENDS.length)];
-  $("phoneWho").textContent = `Calling your friend ${name}…`;
-  const msg = `${lead} it's ${LETTERS[guess]}: ${Q.a[guess]}.`;
+  const pool = t(guess === Q.c ? "sure" : "unsure");
+  const lead = pool[Math.floor(Math.random() * pool.length)];
+  const fr = friendList(), name = fr[Math.floor(Math.random() * fr.length)];
+  $("phoneWho").textContent = t("calling", { name });
+  const msg = t("phoneMsg", { lead, L: LETTERS[guess], ans: ansLabel(Q, guess) });
   $("phoneScreen").classList.add("show");
   const el = $("phoneMsg"); el.textContent = ""; el.classList.add("typing");
   let k = 0;
-  const t = setInterval(() => { el.textContent = msg.slice(0, ++k); if (k >= msg.length) { clearInterval(t); el.classList.remove("typing"); } }, 35);
+  const tm = setInterval(() => { el.textContent = msg.slice(0, ++k); if (k >= msg.length) { clearInterval(tm); el.classList.remove("typing"); } }, 35);
 };
 $("phoneClose").onclick = () => { $("phoneScreen").classList.remove("show"); if (!locked) pauseTimer(false); };
 
 $("llAudience").onclick = () => {
-  if (locked || usedLL.llAudience || anyModalOpen()) return;
+  if (!CFG.ll.audience || locked || usedLL.llAudience || anyModalOpen()) return;
   useLL("llAudience"); pauseTimer(true);
-  const Q = QUESTIONS[cur], rem = remaining(), n = Q.a.length;
+  const Q = QUESTIONS[cur], rem = remaining();
+  let fav = Q.c;   // the answer the audience likes most
+  const wr = rem.filter((k) => k !== Q.c);
+  if (wr.length && Math.random() * 100 >= +CFG.audAcc) fav = wr[Math.floor(Math.random() * wr.length)];
   const votes = Q.a.map(() => 0);
-  const others = rem.filter((k) => k !== Q.c);
+  const others = rem.filter((k) => k !== fav);
   const top = others.length === 0 ? 100 : others.length === 1 ? 55 + Math.floor(Math.random() * 25) : 42 + Math.floor(Math.random() * 25);
-  votes[Q.c] = top;
+  votes[fav] = top;
   let left = 100 - top;
   others.forEach((k, idx) => {
     if (idx === others.length - 1) { votes[k] = left; }
     else { const v = Math.floor(Math.random() * Math.min(left, top - 1)); votes[k] = v; left -= v; }
   });
-  // make sure the correct answer stays the highest
-  others.forEach((k) => { if (votes[k] >= votes[Q.c]) { const d = votes[k] - votes[Q.c] + 3; votes[k] -= d; votes[Q.c] += d; } });
+  others.forEach((k) => { if (votes[k] >= votes[fav]) { const d = votes[k] - votes[fav] + 3; votes[k] -= d; votes[fav] += d; } });
   const chart = $("chart"); chart.innerHTML = "";
   Q.a.forEach((_, k) => {
     const b = document.createElement("div"); b.className = "bar";
@@ -675,48 +999,45 @@ function closeModals() { ["confirmScreen", "phoneScreen", "audienceScreen"].forE
 // ===================== END =====================
 function rating(n) { return SCORING.find((s) => n >= s.min && n <= s.max) || SCORING[SCORING.length - 1]; }
 const band = (s) => (s.min === s.max ? `${s.min}` : `${s.min}–${s.max}`);
-function wonAmount(win) {
-  if (win) return LADDER[LADDER.length - 1];
-  if (cur > SAFE[1]) return LADDER[SAFE[1]];
-  if (cur > SAFE[0]) return LADDER[SAFE[0]];
-  return 0;
+function wonAmount(mode) {
+  if (mode === "win") return LADDER[LADDER.length - 1];
+  if (mode === "practice") return correctCount > 0 ? LADDER[correctCount - 1] : 0;
+  const s = SAFE.filter((i) => i < cur);
+  return s.length ? LADDER[s[s.length - 1]] : 0;
 }
 
-function endGame(win) {
+function endGame(mode) {
   stopTimer(); closeModals();
-  const amount = wonAmount(win), N = QUESTIONS.length;
+  const amount = wonAmount(mode), N = QUESTIONS.length;
   const r = rating(correctCount);
   const card = $("endCard");
   const scoreRows = SCORING.map((s) => `<tr class="${s === r ? "me" : ""}"><td>${band(s)}</td><td>${s.label}</td></tr>`).join("");
-  const Q = QUESTIONS[cur];
-  card.innerHTML = win
-    ? `<h1>CHEMISTRY CHAMPION!</h1>
-       <p class="big">${fmt(amount)}</p>
-       <h2>Score: ${correctCount} / ${N} — ${r.label}</h2>`
-    : `<h1>GAME OVER</h1>
-       <p>${history[cur] === -1 ? "Time ran out on" : "Wrong answer on"} Question ${cur + 1}. The correct answer was
-          <b style="color:#59f08f">${LETTERS[Q.c]}: ${esc(Q.a[Q.c])}</b>.</p>
-       <p style="margin-top:2vh;">Total won</p>
-       <p class="big">${fmt(amount)}</p>
-       <p>${amount > 0 ? "You kept your safe haven winnings." : "You did not reach a safe haven."}</p>
-       <h2>Score: ${correctCount} / ${N} — ${r.label}</h2>`;
+  const Q = QUESTIONS[cur], who = GAME.player ? `<p style="color:var(--muted); letter-spacing:.1em;">${esc(GAME.player)}</p>` : "";
+  if (mode === "win") card.innerHTML = `${who}<h1>${t("champion")}</h1><p class="big">${esc(fmt(amount))}</p><h2>${t("score", { c: correctCount, n: N, r: r.label })}</h2>`;
+  else if (mode === "practice") card.innerHTML = `${who}<h1>${t("practiceDone")}</h1><p style="margin-top:2vh;">${t("totalWon")}</p><p class="big">${esc(fmt(amount))}</p><h2>${t("score", { c: correctCount, n: N, r: r.label })}</h2>`;
+  else card.innerHTML = `${who}<h1>${t("gameOver")}</h1>
+       <p>${history[cur] === -1 ? t("timeRanOut", { n: cur + 1 }) : t("wrongOn", { n: cur + 1 })} ${t("correctWas")}
+          <b style="color:#59f08f">${LETTERS[Q.c]}: ${esc(ansLabel(Q, Q.c))}</b>.</p>
+       <p style="margin-top:2vh;">${t("totalWon")}</p>
+       <p class="big">${esc(fmt(amount))}</p>
+       <p>${amount > 0 ? t("kept") : t("notReached")}</p>
+       <h2>${t("score", { c: correctCount, n: N, r: r.label })}</h2>`;
   card.innerHTML += `<table class="scoretable">${scoreRows}</table>
-       <button class="btn" onclick="restart()">↻ RESTART</button>
-       <button class="btn ghost" onclick="showTeacher()">👩‍🏫 TEACHER MODE</button>`;
+       <button class="btn" onclick="restart()">${t("restartBtn")}</button>
+       <button class="btn ghost" onclick="showTeacher()">${t("teacherBtn")}</button>`;
   $("endScreen").classList.add("show");
-  if (win) { sfx.win(); confetti(); }
+  if (mode === "win") { sfx.win(); if (CFG.confetti) confetti(); }
+  saveResult(mode, amount);
 }
 
 function showTeacher() {
   const rows = QUESTIONS.map((Q, i) => {
     const miss = history[i] !== undefined && history[i] !== Q.c;
-    return `<tr class="${miss ? "miss" : ""}"><td>${i + 1}</td><td>${LETTERS[Q.c]} – ${esc(Q.a[Q.c])}</td></tr>`;
+    return `<tr class="${miss ? "miss" : ""}"><td>${i + 1}</td><td>${LETTERS[Q.c]} – ${esc(ansLabel(Q, Q.c))}</td></tr>`;
   });
-  const half = Math.ceil(rows.length / 2);
-  $("keyGrid").innerHTML =
-    `<table class="key"><tr><th>Question</th><th>Correct answer</th></tr>${rows.slice(0, half).join("")}</table>` +
-    `<table class="key"><tr><th>Question</th><th>Correct answer</th></tr>${rows.slice(half).join("")}</table>`;
-  $("scoreTable").innerHTML = `<tr><td><b>Correct answers</b></td><td><b>Result</b></td></tr>` +
+  const half = Math.ceil(rows.length / 2), head = `<tr><th>${t("question")}</th><th>${t("correctAns")}</th></tr>`;
+  $("keyGrid").innerHTML = `<table class="key">${head}${rows.slice(0, half).join("")}</table><table class="key">${head}${rows.slice(half).join("")}</table>`;
+  $("scoreTable").innerHTML = `<tr><td><b>${t("correctAnswers")}</b></td><td><b>${t("result")}</b></td></tr>` +
     SCORING.map((s) => `<tr><td>${band(s)}</td><td>${s.label}</td></tr>`).join("");
   $("teacherScreen").classList.add("show");
 }
@@ -724,11 +1045,12 @@ $("teacherClose").onclick = () => $("teacherScreen").classList.remove("show");
 $("teacherRestart").onclick = () => restart();
 
 function restart() {
-  stopTimer();
+  stopTimer(); GAME.token++;
   ["confirmScreen", "phoneScreen", "audienceScreen", "endScreen", "teacherScreen"].forEach((id) => $(id).classList.remove("show"));
   stopConfetti();
   cur = 0; correctCount = 0; usedLL = {}; history = []; locked = false;
-  fillQuizSelect();
+  $("answers").classList.remove("suspense");
+  fillQuizSelect(); renderStart();
   $("startScreen").classList.add("show");
   updateLadder();
 }
@@ -744,23 +1066,36 @@ $("startBtn").onclick = () => {
 };
 $("quizSel").onchange = onQuizChange;
 $("countSel").onchange = updateStartInfo;
-// quizzes edited in ChemQuiz Live (another tab) appear when you come back here
-window.addEventListener("storage", (e) => { if (e.key === "chemquiz-library-v1" && $("startScreen").classList.contains("show")) fillQuizSelect(); });
+$("timeSel").onchange = () => ($("timeSel").dataset.touched = "1");
+document.querySelectorAll(".langsw button").forEach((b) => (b.onclick = () => { CFG.lang = b.dataset.lang; saveCfg(); applyLang(); }));
+window.addEventListener("storage", (e) => {
+  if (e.key === LIB_KEY && $("startScreen").classList.contains("show")) fillQuizSelect();
+});
+
+// ===================== RESULTS HISTORY =====================
+function readHist() { try { const v = JSON.parse(localStorage.getItem(HIST_KEY)); if (Array.isArray(v)) return v; } catch (e) {} return []; }
+function writeHist(h) { try { localStorage.setItem(HIST_KEY, JSON.stringify(h.slice(-1000))); } catch (e) {} }
+function saveResult(mode, amount) {
+  if (!CFG.history) return;
+  const h = readHist();
+  h.push({ d: Date.now(), p: GAME.player, q: GAME.quiz, n: QUESTIONS.length, c: correctCount, won: fmt(amount), o: mode, lang: CFG.lang, r: rating(correctCount).label });
+  writeHist(h);
+}
 
 // ===================== MISC =====================
 let toastT = null;
 function toast(msg, ms) {
-  const t = $("toast"); t.textContent = msg; t.classList.add("show");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), ms);
+  const el = $("toast"); el.textContent = msg; el.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => el.classList.remove("show"), ms);
 }
-
 $("fsBtn").onclick = () => {
   if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
   else document.exitFullscreen?.();
 };
-
 document.addEventListener("keydown", (e) => {
-  if (e.target && e.target.tagName === "SELECT") return;
+  const tg = e.target && e.target.tagName;
+  if (tg === "INPUT" || tg === "SELECT" || tg === "TEXTAREA") return;
+  if ($("adminScreen").classList.contains("show") || $("pinScreen").classList.contains("show")) return;
   const k = e.key.toUpperCase();
   if ($("confirmScreen").classList.contains("show")) {
     if (k === "ENTER" || k === "Y") $("yesBtn").click();
@@ -796,10 +1131,351 @@ function confetti() {
 }
 function stopConfetti() { confettiRun = false; }
 
+// ===================== ADMIN =====================
+const TABS = ["general", "questions", "ladder", "rules", "helpers", "look", "results", "security"];
+const TAB_KEY = { general: "tGeneral", questions: "tQuestions", ladder: "tLadder", rules: "tRules", helpers: "tHelpers", look: "tLook", results: "tResults", security: "tSecurity" };
+let adTab = "general";
+const QE = { id: null, title: "", qs: [], dirty: false, builtin: false };
+
+function openAdmin() {
+  if (CFG.pin) { $("pinIn").value = ""; $("pinErr").textContent = ""; $("pinScreen").classList.add("show"); setTimeout(() => $("pinIn").focus(), 50); }
+  else showAdmin();
+}
+function checkPin() {
+  if (hashPin($("pinIn").value.trim()) === CFG.pin) { $("pinScreen").classList.remove("show"); showAdmin(); }
+  else { $("pinErr").textContent = t("pinWrong"); $("pinIn").select(); }
+}
+function showAdmin() { QE.id = null; renderAdmin(); $("adminScreen").classList.add("show"); }
+function closeAdmin() {
+  if (QE.dirty && !confirm(t("unsaved"))) return;
+  QE.dirty = false;
+  $("adminScreen").classList.remove("show");
+  fillQuizSelect(); applyAll();
+}
+let msgT = null;
+function adMsg(text, err) {
+  const m = $("adMsg"); m.hidden = !text; m.textContent = text || ""; m.classList.toggle("err", !!err);
+  clearTimeout(msgT); if (text && !err) msgT = setTimeout(() => (m.hidden = true), 2200);
+}
+function renderAdmin() {
+  $("tabs").innerHTML = TABS.map((k) => `<button class="tab ${k === adTab ? "on" : ""}" data-tab="${k}">${t(TAB_KEY[k])}</button>`).join("");
+  document.querySelectorAll("#adminScreen [data-i]").forEach((el) => (el.textContent = t(el.dataset.i)));
+  const p = $("pane");
+  p.innerHTML = ({ general: paneGeneral, questions: paneQuestions, ladder: paneLadder, rules: paneRules, helpers: paneHelpers, look: paneLook, results: paneResults, security: paneSecurity })[adTab]();
+}
+const sel = (key, opts, cur, extra = "") => `<select data-cfg="${key}" ${extra}>${opts.map(([v, l]) => `<option value="${esc(v)}" ${String(v) === String(cur) ? "selected" : ""}>${esc(l)}</option>`).join("")}</select>`;
+const chk = (key, on, label) => `<label class="chk"><input type="checkbox" data-cfg="${key}" ${on ? "checked" : ""}> ${esc(label)}</label>`;
+const txt = (key, val, ph, extra = "") => `<input type="text" data-cfg="${key}" value="${esc(val)}" placeholder="${esc(ph)}" ${extra}>`;
+
+function paneGeneral() {
+  return `<div class="frm">
+    <label>${t("language")}${sel("lang", [["en", "English"], ["mk", "Македонски"]], CFG.lang)}</label>
+    <label class="wide">${t("aTitle")}${txt("title", CFG.title, t("title").replace("<br>", " "), 'maxlength="80"')}<span class="hint">${t("blankDefault")}</span></label>
+    <label>${t("aLabel")}${txt("label", CFG.label, t("label"), 'maxlength="40"')}</label>
+    <label>${t("aBrand")}${txt("brand", CFG.brand, t("brand"), 'maxlength="40"')}</label>
+    <label class="wide">${t("aSub")}${txt("subtitle", CFG.subtitle, t("challenge"), 'maxlength="60"')}<span class="hint">${t("blankDefault")} ${t("subHint")}</span></label>
+  </div>`;
+}
+
+function paneLadder() {
+  const u = CFG.unit;
+  const rows = CFG.ladder.map((v, i) => i).reverse().map((i) => `<tr><td>${i + 1}</td>
+      <td><input type="text" inputmode="numeric" data-ladder="${i}" value="${CFG.ladder[i]}" style="max-width:160px"></td>
+      <td>${i < 19 ? `<label class="chk"><input type="checkbox" data-safe="${i}" ${CFG.safe.includes(i) ? "checked" : ""}></label>` : "◆"}</td>
+      <td class="ro" id="pv${i}">${esc(fmt(CFG.ladder[i]))}</td></tr>`).join("");
+  return `<div class="frm">
+      <label>${t("unit")}${sel("unit.mode", [["none", t("uNone")], ["points", t("uPoints")], ["mkd", t("uMkd")], ["eur", t("uEur")], ["usd", t("uUsd")], ["custom", t("uCustom")]], u.mode)}</label>
+      <label>${t("unitText")}${txt("unit.text", u.text, "★", 'maxlength="12"')}</label>
+      <label>${t("unitPos")}${sel("unit.pos", [["after", t("after")], ["before", t("before")]], u.pos)}</label>
+    </div>
+    <p class="hint" style="margin-top:1.4vh">${t("ladderHint")}</p>
+    <table class="lt"><tr><th>${t("qcol")}</th><th>${t("prize")}</th><th>${t("safe")}</th><th>${t("preview")}</th></tr>${rows}</table>
+    <div class="row"><button class="sbtn ghost" data-act="resetLadder">${t("resetLadder")}</button></div>`;
+}
+
+function paneRules() {
+  const tv = [10, 15, 20, 30, 45, 60].map((v) => [v, t("secs", { n: v })]).concat([[0, t("noTimer")]]);
+  const sv = [0.5, 1, 1.5, 2.2, 3, 4].map((v) => [v, t("sec", { n: String(v).replace(".", CFG.lang === "mk" ? "," : ".") })]);
+  return `<div class="frm">
+      <label>${t("timerDefault")}${sel("timer", tv, CFG.timer, "data-num")}</label>
+      <label>${t("suspense")}${sel("suspense", sv, CFG.suspense, "data-num")}</label>
+      <label>${t("onWrong")}${sel("onWrong", [["end", t("wrongEnd")], ["continue", t("wrongCont")]], CFG.onWrong)}</label>
+      <div class="fld" style="justify-content:flex-end">${chk("useQTime", CFG.useQTime, t("useQTime"))}${chk("confirm", CFG.confirm, t("confirmOn"))}</div>
+    </div>
+    <h3>${t("lifelines")}</h3>
+    <div class="frm">${chk("ll.fifty", CFG.ll.fifty, t("fifty"))}${chk("ll.phone", CFG.ll.phone, t("phone"))}${chk("ll.audience", CFG.ll.audience, t("audience"))}${chk("ll.extra", CFG.ll.extra, "❤ " + t("extra"))}</div>
+    <p class="hint">${t("extraHint")}</p>`;
+}
+
+function paneHelpers() {
+  const rng = (key, v) => `<div class="row"><input type="range" min="0" max="100" step="5" data-cfg="${key}" data-num value="${v}" style="flex:1; accent-color:var(--gold)"><b id="out_${key}" style="min-width:3.5em">${v}%</b></div>`;
+  return `<div class="frm">
+      <label class="wide">${t("friends")}<textarea data-cfg="friends" rows="4">${esc(CFG.friends)}</textarea><span class="hint">${t("friendsHint")}</span></label>
+      <label>${t("friendAcc")}${rng("friendAcc", CFG.friendAcc)}</label>
+      <label>${t("audAcc")}${rng("audAcc", CFG.audAcc)}</label>
+    </div>`;
+}
+
+function paneLook() {
+  const th = Object.entries(THEMES).map(([k, v]) => `<div class="theme ${CFG.theme === k ? "on" : ""}" data-theme="${k}" style="background:linear-gradient(135deg, ${v.bg4}, ${v.bg2}); border-color:${CFG.theme === k ? "" : v.line}">${t("th" + k.charAt(0).toUpperCase() + k.slice(1))}</div>`).join("");
+  return `<div class="frm">
+      <div class="fld">${chk("sound", CFG.sound, t("sound"))}</div>
+      <label>${t("volume")}<div class="row"><input type="range" min="0" max="100" step="5" data-cfg="volume" data-num value="${CFG.volume}" style="flex:1; accent-color:var(--gold)"><b id="out_volume" style="min-width:3.5em">${CFG.volume}%</b><button class="sbtn ghost" data-act="testSound">${t("testSound")}</button></div></label>
+      <div class="fld">${chk("confetti", CFG.confetti, t("confetti"))}</div>
+    </div>
+    <h3>${t("theme")}</h3><div class="themes">${th}</div>`;
+}
+
+function paneResults() {
+  const h = readHist().slice().reverse();
+  const loc = CFG.lang === "mk" ? "mk-MK" : "en-GB";
+  const oc = { win: t("oWin"), lose: t("oLose"), practice: t("oPractice") };
+  const rows = h.slice(0, 300).map((r) => `<tr><td>${esc(new Date(r.d).toLocaleString(loc, { dateStyle: "short", timeStyle: "short" }))}</td><td>${esc(r.p || "–")}</td><td>${esc(r.q)}</td>
+      <td class="num">${r.c} / ${r.n}</td><td>${esc(r.r || "")}</td><td class="num">${esc(r.won)}</td><td>${esc(oc[r.o] || r.o)}</td></tr>`).join("");
+  return `${chk("history", CFG.history, t("histOn"))}
+    <div class="row"><span class="hint">${t("nGames", { n: h.length })}</span><span style="flex:1"></span>
+      <button class="sbtn" data-act="exportHist" ${h.length ? "" : "disabled"}>${t("exportXlsx")}</button>
+      <button class="sbtn danger" data-act="clearHist" ${h.length ? "" : "disabled"}>${t("clearHist")}</button></div>
+    ${h.length ? `<table class="hist"><tr><th>${t("date")}</th><th>${t("playerC")}</th><th>${t("quiz")}</th><th>${t("score", { c: "", n: "", r: "" }).split(":")[0]}</th><th>${t("result")}</th><th>${t("wonC")}</th><th>${t("outcome")}</th></tr>${rows}</table>` : `<p class="hint">${t("histEmpty")}</p>`}`;
+}
+
+function paneSecurity() {
+  return `<h3>${t("pinSet")}</h3><p class="hint">${t("pinHint")}</p>
+    <p><b>${CFG.pin ? t("pinOn") : t("pinOff")}</b></p>
+    <div class="row"><input type="password" id="newPin" inputmode="numeric" maxlength="12" placeholder="${esc(t("newPin"))}" style="max-width:260px" autocomplete="new-password">
+      <button class="sbtn" data-act="setPin">${t("setPin")}</button>${CFG.pin ? `<button class="sbtn danger" data-act="removePin">${t("removePin")}</button>` : ""}</div>
+    <h3>${t("backup")}</h3><p class="hint">${t("backupHint")}</p>
+    <div class="row"><label class="chk"><input type="checkbox" id="inclHist" checked> ${t("inclHist")}</label></div>
+    <div class="row"><button class="sbtn" data-act="exportSet">${t("exportSet")}</button><button class="sbtn ghost" data-act="importSet">${t("importSet")}</button>
+      <button class="sbtn danger" data-act="resetAll">${t("resetAll")}</button><input type="file" id="setFile" accept=".json" hidden></div>`;
+}
+
+// ---------- question editor ----------
+function editCopy(q) {
+  if (q.t !== "mc" && q.t !== "tf") return { ro: true, orig: q };
+  const e = { t: q.t, q: q.q || "", c: Number.isInteger(q.c) ? q.c : 0, topic: q.topic || "", ref: q.ref || "", time: q.time || "" };
+  e.a = q.t === "tf" ? ["True", "False"] : (q.a || []).slice(0, 4).map(String);
+  while (e.t === "mc" && e.a.length < 4) e.a.push("");
+  e.extra = Object.assign({}, q);   // keep fields this editor does not show
+  return e;
+}
+function loadQE(id) {
+  const z = allQuizzes().find((x) => x.id === id) || allQuizzes()[0];
+  QE.id = z.id; QE.title = z.title; QE.qs = z.qs.map(editCopy); QE.dirty = false;
+  QE.builtin = !(readLib() || []).some((x) => x.id === z.id);
+}
+function paneQuestions() {
+  if (!QE.id) loadQE($("quizSel").value || BUILTIN_ID);
+  const list = allQuizzes();
+  const opts = list.map((z) => `<option value="${esc(z.id)}" ${z.id === QE.id ? "selected" : ""}>${esc(z.title)} (${z.qs.length})</option>`).join("") +
+    (list.some((z) => z.id === QE.id) ? "" : `<option value="${esc(QE.id)}" selected>${esc(QE.title)} *</option>`);
+  const cards = QE.qs.map((q, i) => qCard(q, i)).join("");
+  return `<div class="frm">
+      <label>${t("aQuiz")}<select id="qeSel">${opts}</select></label>
+      <label>${t("quizTitle")}<input type="text" id="qeTitle" value="${esc(QE.title)}" maxlength="80"></label>
+    </div>
+    <div class="row"><button class="sbtn ghost" data-act="newQuiz">${t("newQuiz")}</button>${QE.builtin ? "" : `<button class="sbtn danger" data-act="delQuiz">${t("delQuiz")}</button>`}</div>
+    ${QE.builtin ? `<p class="hint">${t("builtinNote")}</p>` : ""}
+    <div id="qeList" style="margin-top:1vh">${cards}</div>
+    <div class="row" style="justify-content:center"><button class="sbtn ghost" data-act="addMc">${t("addMc")}</button><button class="sbtn ghost" data-act="addTf">${t("addTf")}</button>
+      <span style="flex:1"></span><button class="sbtn" data-act="saveQuiz">${t("saveQuiz")}</button></div>`;
+}
+function qCard(q, i) {
+  const n = QE.qs.length;
+  const tools = `<span class="sp"></span><button class="ib" data-qa="up" data-n="${i}" ${i === 0 ? "disabled" : ""}>↑</button><button class="ib" data-qa="down" data-n="${i}" ${i === n - 1 ? "disabled" : ""}>↓</button><button class="ib del" data-qa="del" data-n="${i}">✕</button>`;
+  if (q.ro) return `<div class="qed"><div class="qh"><b>${i + 1}</b><span class="ro">${esc(q.orig.q)}</span>${tools}</div><div class="ro">${t("roNote", { type: q.orig.t === "num" ? t("num") : t("gap") })}</div></div>`;
+  const body = q.t === "mc"
+    ? `<div class="opts2">${q.a.map((s, k) => `<label class="opt2"><input type="radio" name="qc${i}" data-qf="c" data-n="${i}" value="${k}" ${q.c === k ? "checked" : ""}><span class="L">${LETTERS[k]}</span><input type="text" data-qf="a" data-n="${i}" data-k="${k}" value="${esc(s)}" placeholder="${esc(t("answerX", { L: LETTERS[k] }) + (k > 1 ? t("optional") : ""))}"></label>`).join("")}</div><div class="hint">${t("tickCorrect")}</div>`
+    : `<div class="row">${[t("trueT"), t("falseT")].map((s, k) => `<label class="chk"><input type="radio" name="qc${i}" data-qf="c" data-n="${i}" value="${k}" ${q.c === k ? "checked" : ""}> ${esc(t("isCorrect", { x: s }))}</label>`).join("")}</div>`;
+  return `<div class="qed" id="qe${i}"><div class="qh"><b>${i + 1}</b><select data-qf="t" data-n="${i}"><option value="mc" ${q.t === "mc" ? "selected" : ""}>${t("mc")}</option><option value="tf" ${q.t === "tf" ? "selected" : ""}>${t("tf")}</option></select>${tools}</div>
+    <textarea rows="2" data-qf="q" data-n="${i}" placeholder="${esc(t("qText"))}">${esc(q.q)}</textarea>${body}
+    <div class="frm" style="grid-template-columns:2fr 1fr 1fr"><label>${t("topic")}<input type="text" data-qf="topic" data-n="${i}" value="${esc(q.topic)}"></label>
+      <label>${t("page")}<input type="text" data-qf="ref" data-n="${i}" value="${esc(q.ref)}"></label>
+      <label>${t("time")}<input type="text" inputmode="numeric" data-qf="time" data-n="${i}" value="${esc(q.time)}"></label></div>
+    <div class="qerr" id="qerr${i}"></div></div>`;
+}
+function onQField(el, ev) {
+  const i = +el.dataset.n, q = QE.qs[i], f = el.dataset.qf;
+  if (!q || q.ro) return;
+  QE.dirty = true;
+  if (f === "t") {
+    if (ev !== "change") return;
+    if (el.value === "tf") { q.t = "tf"; q.a = ["True", "False"]; q.c = q.c === 1 ? 1 : 0; }
+    else { q.t = "mc"; q.a = ["", "", "", ""]; }
+    $("pane").querySelector("#qe" + i).outerHTML = qCard(q, i);
+    return;
+  }
+  if (f === "a") q.a[+el.dataset.k] = el.value;
+  else if (f === "c") q.c = +el.value;
+  else q[f] = el.value;
+  const er = $("qerr" + i); if (er) { er.textContent = ""; $("qe" + i).classList.remove("err"); }
+}
+function cleanQ(e) {
+  if (e.ro) return e.orig;
+  const o = Object.assign({}, e.extra || {}, { t: e.t, q: String(e.q).trim() });
+  delete o.v; delete o.tol; delete o.acc; delete o.cs;
+  if (e.t === "mc") {
+    const pairs = e.a.map((s, k) => [String(s || "").trim(), k]).filter((p) => p[0]);
+    o.a = pairs.map((p) => p[0]); o.c = pairs.findIndex((p) => p[1] === e.c);
+  } else { o.a = ["True", "False"]; o.c = e.c === 1 ? 1 : 0; }
+  ["topic", "ref"].forEach((k) => { const v = String(e[k] || "").trim(); if (v) o[k] = v; else delete o[k]; });
+  const tm = parseInt(e.time, 10); if (tm >= 5 && tm <= 300) o.time = tm; else delete o.time;
+  return o;
+}
+function qErr(o) {
+  if (o.t !== "mc" && o.t !== "tf") return "";
+  if (!o.q) return t("errText");
+  if (o.t === "mc" && o.a.length < 2) return t("errTwo");
+  if (o.t === "mc" && o.c < 0) return t("errTick");
+  return "";
+}
+function saveQuiz() {
+  QE.title = $("qeTitle").value.trim();
+  if (!QE.title) { adMsg(t("errTitle"), true); $("qeTitle").focus(); return; }
+  const out = QE.qs.map(cleanQ);
+  let bad = -1;
+  out.forEach((o, i) => { const e = qErr(o); const el = $("qerr" + i); if (el) { el.textContent = e; $("qe" + i).classList.toggle("err", !!e); } if (e && bad < 0) bad = i; });
+  if (bad >= 0) { adMsg(t("errFix"), true); $("qe" + bad).scrollIntoView({ behavior: "smooth", block: "center" }); return; }
+  const lib = readLib() || [];
+  const z = { id: QE.id, title: QE.title, qs: out, updated: Date.now() };
+  const k = lib.findIndex((x) => x.id === QE.id);
+  if (k >= 0) lib[k] = Object.assign({}, lib[k], z); else lib.unshift(z);
+  if (!writeLib(lib)) { adMsg("Could not save in this browser.", true); return; }
+  QE.dirty = false; QE.builtin = false;
+  fillQuizSelect(); $("quizSel").value = QE.id; onQuizChange();
+  renderAdmin(); adMsg(t("quizSaved"));
+}
+
+// ---------- events ----------
+function setCfg(path, val) {
+  const ks = path.split("."); let o = CFG;
+  ks.slice(0, -1).forEach((k) => (o = o[k]));
+  o[ks[ks.length - 1]] = val;
+}
+function onAdminInput(ev) {
+  const el = ev.target;
+  if (el.dataset.qf) return onQField(el, ev.type);
+  if (el.id === "qeTitle") { QE.dirty = true; return; }
+  if (el.dataset.ladder !== undefined) {
+    const i = +el.dataset.ladder, v = parseInt(String(el.value).replace(/[^\d]/g, ""), 10);
+    if (v >= 0) { CFG.ladder[i] = v; saveCfg(); $("pv" + i).textContent = fmt(v); }
+    return;
+  }
+  if (el.dataset.safe !== undefined) {
+    if (ev.type !== "change") return;
+    const i = +el.dataset.safe;
+    CFG.safe = el.checked ? [...new Set(CFG.safe.concat(i))].sort((a, b) => a - b) : CFG.safe.filter((x) => x !== i);
+    saveCfg(); adMsg(t("saved")); return;
+  }
+  const key = el.dataset.cfg; if (!key) return;
+  if (el.tagName === "SELECT" || el.type === "checkbox") { if (ev.type !== "change") return; }
+  const val = el.type === "checkbox" ? el.checked : el.dataset.num !== undefined ? +el.value : el.value;
+  setCfg(key, val); saveCfg();
+  const out = $("out_" + key); if (out) out.textContent = val + "%";
+  if (key === "lang") { applyAll(); renderAdmin(); }
+  else if (key.startsWith("unit.")) { CFG.ladder.forEach((v, i) => { const p = $("pv" + i); if (p) p.textContent = fmt(v); }); applyAll(); }
+  else applyAll();
+  if (ev.type === "change") adMsg(cfgOk ? t("saved") : "Could not save in this browser.", !cfgOk);
+}
+async function onAdminClick(ev) {
+  const tab = ev.target.closest("[data-tab]");
+  if (tab) {
+    if (adTab === "questions" && tab.dataset.tab !== "questions" && QE.dirty && !confirm(t("unsaved"))) return;
+    if (tab.dataset.tab !== "questions") { QE.dirty = false; QE.id = null; }
+    adTab = tab.dataset.tab; adMsg(""); renderAdmin(); return;
+  }
+  const th = ev.target.closest("[data-theme]");
+  if (th) { CFG.theme = th.dataset.theme; saveCfg(); applyTheme(); renderAdmin(); adMsg(t("saved")); return; }
+  const qa = ev.target.closest("[data-qa]");
+  if (qa) {
+    const i = +qa.dataset.n, a = qa.dataset.qa;
+    if (a === "del" && QE.qs[i] && (QE.qs[i].ro ? QE.qs[i].orig.q : QE.qs[i].q).trim() && !confirm(t("confirmDelQ", { n: i + 1 }))) return;
+    if (a === "up" && i > 0) QE.qs.splice(i - 1, 0, QE.qs.splice(i, 1)[0]);
+    if (a === "down" && i < QE.qs.length - 1) QE.qs.splice(i + 1, 0, QE.qs.splice(i, 1)[0]);
+    if (a === "del") QE.qs.splice(i, 1);
+    QE.title = $("qeTitle").value; QE.dirty = true; renderAdmin(); return;
+  }
+  const b = ev.target.closest("[data-act]"); if (!b) return;
+  const act = b.dataset.act;
+  if (act === "addMc" || act === "addTf") {
+    QE.title = $("qeTitle").value;
+    QE.qs.push(editCopy({ t: act === "addMc" ? "mc" : "tf", q: "", a: act === "addMc" ? ["", "", "", ""] : ["True", "False"], c: 0 }));
+    QE.dirty = true; renderAdmin();
+    const last = $("qe" + (QE.qs.length - 1)); last.scrollIntoView({ behavior: "smooth", block: "center" }); last.querySelector("textarea").focus({ preventScroll: true });
+  } else if (act === "saveQuiz") saveQuiz();
+  else if (act === "newQuiz") {
+    if (QE.dirty && !confirm(t("unsaved"))) return;
+    QE.id = uid(); QE.title = t("newQuizName"); QE.qs = [editCopy({ t: "mc", q: "", a: ["", "", "", ""], c: 0 })]; QE.dirty = true; QE.builtin = false;
+    renderAdmin(); $("qeTitle").select();
+  } else if (act === "delQuiz") {
+    if (!confirm(t("confirmDelQuiz", { t: QE.title }))) return;
+    writeLib((readLib() || []).filter((x) => x.id !== QE.id));
+    QE.dirty = false; QE.id = null; fillQuizSelect(); renderAdmin();
+  } else if (act === "resetLadder") { CFG.ladder = DEFAULT_LADDER.slice(); CFG.safe = [4, 9]; saveCfg(); renderAdmin(); adMsg(t("saved")); }
+  else if (act === "testSound") { const s = CFG.sound; CFG.sound = true; sfx.correct(); CFG.sound = s; }
+  else if (act === "clearHist") { if (confirm(t("confirmClear"))) { writeHist([]); renderAdmin(); } }
+  else if (act === "exportHist") exportHist().catch((e) => adMsg(e.message, true));
+  else if (act === "setPin") {
+    const p = $("newPin").value.trim();
+    if (!/^\d{4,12}$/.test(p)) { adMsg(t("pinBad"), true); return; }
+    CFG.pin = hashPin(p); saveCfg(); renderAdmin(); adMsg(t("pinSaved"));
+  } else if (act === "removePin") { CFG.pin = ""; saveCfg(); renderAdmin(); adMsg(t("pinRemoved")); }
+  else if (act === "exportSet") {
+    const data = { app: "Chemistry Champion", version: 1, settings: CFG };
+    if ($("inclHist").checked) data.history = readHist();
+    download(new Blob([JSON.stringify(data, null, 2)], { type: "application/json" }), "Chemistry_Champion_settings_" + new Date().toISOString().slice(0, 10) + ".json");
+  } else if (act === "importSet") $("setFile").click();
+  else if (act === "resetAll") {
+    if (!confirm(t("confirmReset"))) return;
+    const keepPin = CFG.pin; CFG = mergeCfg({ lang: CFG.lang, pin: keepPin }); saveCfg(); applyAll(); renderAdmin(); adMsg(t("saved"));
+  }
+}
+async function importSettings(file) {
+  try {
+    const o = JSON.parse(await file.text());
+    if (!o || o.app !== "Chemistry Champion" || !o.settings) throw new Error();
+    CFG = mergeCfg(o.settings); saveCfg();
+    if (Array.isArray(o.history)) {
+      const h = readHist(), seen = new Set(h.map((r) => r.d + "|" + r.p));
+      o.history.forEach((r) => { if (r && r.d && !seen.has(r.d + "|" + r.p)) h.push(r); });
+      h.sort((a, b) => a.d - b.d); writeHist(h);
+    }
+    applyAll(); renderAdmin(); adMsg(t("imported"));
+  } catch (e) { adMsg(t("badFile"), true); }
+}
+function download(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000); }
+function loadScript(src) { return new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = () => rej(new Error("Could not load the Excel tool – check the internet connection.")); document.head.appendChild(s); }); }
+async function exportHist() {
+  if (!window.XLSX) await loadScript("https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js");
+  const oc = { win: t("oWin"), lose: t("oLose"), practice: t("oPractice") };
+  const rows = [[t("date"), t("playerC"), t("quiz"), t("questions"), t("correctAnswers"), t("result"), t("wonC"), t("outcome")]]
+    .concat(readHist().map((r) => [new Date(r.d), r.p || "", r.q, r.n, r.c, r.r || "", r.won, oc[r.o] || r.o]));
+  const ws = XLSX.utils.aoa_to_sheet(rows, { cellDates: true });
+  ws["!cols"] = [18, 22, 36, 10, 14, 22, 14, 14].map((w) => ({ wch: w }));
+  for (let r = 1; r < rows.length; r++) { const c = ws[XLSX.utils.encode_cell({ r, c: 0 })]; if (c) c.z = "dd.mm.yyyy hh:mm"; }
+  const wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Results");
+  XLSX.writeFile(wb, "Chemistry_Champion_results_" + new Date().toISOString().slice(0, 10) + ".xlsx");
+}
+
+// ===================== BOOT =====================
+$("adminBtn").onclick = openAdmin;
+$("pinOk").onclick = checkPin;
+$("pinIn").addEventListener("keydown", (e) => { if (e.key === "Enter") checkPin(); if (e.key === "Escape") $("pinScreen").classList.remove("show"); });
+$("pinCancel").onclick = () => $("pinScreen").classList.remove("show");
+$("adminClose").onclick = closeAdmin;
+$("adminScreen").addEventListener("input", onAdminInput);
+$("adminScreen").addEventListener("change", (e) => { if (e.target.id === "qeSel") { if (QE.dirty && !confirm(t("unsaved"))) { e.target.value = QE.id; return; } loadQE(e.target.value); renderAdmin(); return; } if (e.target.id === "setFile") { const f = e.target.files[0]; e.target.value = ""; if (f) importSettings(f); return; } onAdminInput(e); });
+$("adminScreen").addEventListener("click", onAdminClick);
+window.addEventListener("beforeunload", (e) => { if ($("adminScreen").classList.contains("show") && QE.dirty) { e.preventDefault(); e.returnValue = ""; } });
+
+QUIZZES = loadQuizzes();
 fillQuizSelect();
-planLadder(QUESTIONS.length || Math.min(MAX_Q, currentQuiz().qs.length));
+applyAll();
+planLadder(Math.min(MAX_Q, currentQuiz().qs.length));
 buildLadder();
 updateLadder();
+$("ladderNote").textContent = SAFE.length ? t("safeNote", { list: SAFE.map((i) => i + 1).join(", ") }) : t("noSafe");
+$("brandSub").textContent = (CFG.subtitle || t("challenge")).replace("{n}", LADDER.length);
 </script>
 </body>
 </html>
