@@ -240,6 +240,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
       <button class="btn light sm" id="templateBtn">Download Excel template</button>
       <button class="btn ghost sm" id="backupBtn">Back up all quizzes</button>
       <button class="btn ghost sm" id="restoreBtn">Restore sample quizzes</button>
+      <a class="btn ghost sm" href="champion/" target="_blank" rel="noopener" style="text-decoration:none;">🏆 Chemistry Champion game</a>
       <input type="file" id="importFile" accept=".xlsx,.xls,.csv,.txt,.json" multiple hidden>
     </div>
     <div class="msg" id="libMsg" role="status" hidden></div>
@@ -250,6 +251,7 @@ td.num { font-variant-numeric: tabular-nums; text-align: right; }
         <li><b>Question types:</b> multiple choice (2–4 answers), true / false, number (with an optional ± tolerance) and gap fill (students type a word; you list every accepted answer, separated by <b>|</b>).</li>
         <li><b>Excel import:</b> download the template, fill one question per row, save, then use <i>Import file</i>. CSV files with commas or semicolons work too.</li>
         <li>Quizzes are saved <b>in this browser</b> on this computer. Use <i>Back up all quizzes</i> to keep a copy or move them to another computer.</li>
+        <li><b>🏆 Champion</b> opens the single-screen “Who Wants to Be a Chemistry Champion?” game with that quiz (for the projector; multiple-choice and true/false questions, up to 20).</li>
         <li>Students never receive the correct answers in advance: each phone only gets the current question.</li>
       </ul>
     </details>
@@ -652,6 +654,7 @@ function renderLib() {
       <div class="meta">${z.qs.length} question${z.qs.length === 1 ? "" : "s"} &nbsp;${typeTags(z)} · edited ${new Date(z.updated || Date.now()).toLocaleDateString()}</div></div>
       <div class="acts">
         <button class="btn gold sm" data-act="play" data-id="${z.id}">Play</button>
+        <a class="btn light sm" href="champion/?quiz=${encodeURIComponent(z.id)}" target="_blank" rel="noopener" title="Play as the single-screen Chemistry Champion game (multiple-choice and true/false questions)" style="text-decoration:none;">🏆 Champion</a>
         <button class="btn line sm" data-act="edit" data-id="${z.id}">Edit</button>
         <button class="btn line sm" data-act="copy" data-id="${z.id}">Copy</button>
         <button class="btn line sm" data-act="xlsx" data-id="${z.id}" title="Download as an Excel file">Excel</button>

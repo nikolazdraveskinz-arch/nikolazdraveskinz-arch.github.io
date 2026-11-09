@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Who Wants to Be a Chemistry Champion?</title>
+<meta name="description" content="Classroom chemistry quiz game with a 20-step ladder and three lifelines.">
+<style>
+  :root {
+    --bg1: #05061a;
+    --bg2: #120a3a;
+    --bg3: #23125e;
+    --gold: #f5c542;
+    --gold2: #ffdf7e;
+    --line: #6a8cff;
+    --panel: #0b0f3d;
+    --panel2: #141a5c;
+    --text: #ffffff;
+    --muted: #b8c0ff;
+    --green: #1fbf5a;
+    --red: #e0313b;
+    --orange: #ff9d1e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    font-family: "Segoe UI", "Trebuchet MS", Arial, sans-serif;
+    color: var(--text);
+    background: radial-gradient(ellipse at 50% 120%, #3a1a8c 0%, var(--bg3) 25%, var(--bg2) 55%, var(--bg1) 100%);
+    overflow: hidden;
+    user-select: none;
+  }
+
+  /* ---------- studio lights ---------- */
+  .studio { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 0; }
+  .beam {
+    position: absolute; top: -20%; width: 34vw; height: 140vh;
+    background: linear-gradient(to bottom, rgba(160,140,255,0.28), rgba(120,90,255,0.06) 60%, transparent 85%);
+    clip-path: polygon(45% 0, 55% 0, 100% 100%, 0 100%);
+    filter: blur(6px);
+    transform-origin: 50% 0;
+    animation: sweep 9s ease-in-out infinite alternate;
+  }
+  .beam.b1 { left: -6vw;  animation-delay: 0s; }
+  .beam.b2 { left: 33vw;  animation-delay: -3s; opacity: .7; }
+  .beam.b3 { right: -6vw; animation-delay: -6s; }
+  @keyframes sweep { from { transform: rotate(-14deg); } to { transform: rotate(14deg); } }
+  .floor {
+    position: absolute; left: 50%; bottom: -30vh; width: 120vw; height: 60vh; transform: translateX(-50%);
+    background: radial-gradient(ellipse at center, rgba(110,80,255,0.45), transparent 65%);
+  }
+  .rings {
+    position: absolute; left: 50%; top: 50%; width: 120vmin; height: 120vmin; transform: translate(-50%,-50%);
+    border-radius: 50%;
+    background: repeating-radial-gradient(circle, rgba(140,120,255,0.07) 0 2px, transparent 2px 46px);
+    animation: spin 60s linear infinite;
+  }
+  @keyframes spin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+
+  /* ---------- layout ---------- */
+  #app { position: relative; z-index: 1; height: 100vh; display: grid; grid-template-columns: 1fr minmax(260px, 22vw); }
+  #main { display: flex; flex-direction: column; padding: 2.2vh 2vw 3vh; min-width: 0; }
+  #ladder {
+    background: linear-gradient(180deg, rgba(8,10,45,0.92), rgba(20,14,70,0.92));
+    border-left: 2px solid rgba(106,140,255,0.5);
+    padding: 1.6vh 1.2vw; display: flex; flex-direction: column; justify-content: center;
+  }
+
+  /* top bar */
+  .topbar { display: flex; align-items: center; justify-content: space-between; gap: 2vw; }
+  .brand { font-weight: 800; letter-spacing: .08em; font-size: clamp(14px, 1.5vw, 24px); color: var(--gold2); text-transform: uppercase; }
+  .brand small { display: block; color: var(--muted); font-weight: 600; letter-spacing: .12em; font-size: .62em; }
+  .lifelines { display: flex; gap: 1.2vw; }
+  .life {
+    width: clamp(64px, 6.4vw, 110px); height: clamp(42px, 4.2vw, 70px); border-radius: 50%;
+    border: 3px solid var(--line); background: radial-gradient(circle at 50% 35%, #2b3a9e, #0a0f45);
+    color: #fff; font-weight: 800; font-size: clamp(13px, 1.25vw, 22px); cursor: pointer;
+    box-shadow: 0 0 14px rgba(106,140,255,0.6); transition: transform .15s, opacity .3s;
+    display: flex; align-items: center; justify-content: center; text-align: center; line-height: 1;
+  }
+  .life svg { width: 55%; height: 55%; fill: #fff; }
+  .life:hover:not(:disabled) { transform: scale(1.08); }
+  .life:disabled { opacity: .35; cursor: not-allowed; position: relative; }
+  .life:disabled::after {
+    content: ""; position: absolute; width: 110%; height: 4px; background: var(--red); transform: rotate(-28deg); border-radius: 2px;
+  }
+  .iconbtn {
+    background: transparent; border: 2px solid rgba(184,192,255,.5); color: var(--muted); border-radius: 10px;
+    padding: .45em .8em; font-size: clamp(12px, 1vw, 16px); cursor: pointer; font-weight: 700;
+  }
+  .iconbtn:hover { color: #fff; border-color: #fff; }
+
+  /* timer */
+  .timerwrap { margin-top: 2.2vh; display: flex; align-items: center; gap: 1.2vw; }
+  .timerbar { flex: 1; height: clamp(12px, 1.6vh, 20px); border-radius: 20px; background: rgba(255,255,255,0.12); overflow: hidden; border: 1px solid rgba(255,255,255,.25); }
+  .timerfill { height: 100%; width: 100%; background: linear-gradient(90deg, #22d36b, #f5c542, #ff4d4d); background-size: 300% 100%; transition: width .1s linear; }
+  .timernum {
+    width: clamp(54px, 5vw, 86px); height: clamp(54px, 5vw, 86px); border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: clamp(24px, 2.6vw, 44px); font-weight: 800; border: 3px solid var(--gold); background: rgba(10,12,60,.85);
+    box-shadow: 0 0 18px rgba(245,197,66,.5);
+  }
+  .timernum.low { border-color: var(--red); color: #ff8b8b; animation: pulse .5s infinite alternate; }
+  @keyframes pulse { to { transform: scale(1.08); } }
+
+  /* question */
+  .stage { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; gap: 3vh; padding-bottom: 1vh; }
+  .qmeta { text-align: center; color: var(--gold2); font-weight: 700; letter-spacing: .14em; text-transform: uppercase; font-size: clamp(14px, 1.4vw, 24px); }
+  .qmeta span { color: var(--muted); }
+  .hex {
+    position: relative; background: linear-gradient(180deg, #1b2373, #070b3b);
+    clip-path: polygon(3.5% 0, 96.5% 0, 100% 50%, 96.5% 100%, 3.5% 100%, 0 50%);
+    padding: 0 6%;
+  }
+  .hexwrap { position: relative; filter: drop-shadow(0 0 2px var(--line)) drop-shadow(0 0 10px rgba(106,140,255,.45)); }
+  .hexwrap::before { content: ""; position: absolute; left: -3vw; right: -3vw; top: 50%; height: 2px; background: linear-gradient(90deg, transparent, var(--line), transparent); z-index: -1; }
+  .question {
+    min-height: clamp(110px, 18vh, 220px); display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: clamp(22px, 2.7vw, 52px); font-weight: 700; line-height: 1.25;
+  }
+  .answers { display: grid; grid-template-columns: 1fr 1fr; gap: 2.2vh 2.5vw; }
+  .answer { cursor: pointer; transition: transform .12s; }
+  .answer .hex { min-height: clamp(64px, 10vh, 120px); display: flex; align-items: center; gap: 1.2vw; font-size: clamp(18px, 2.1vw, 40px); font-weight: 600; transition: background .2s; }
+  .answer .letter { color: var(--orange); font-weight: 900; min-width: 1.4em; }
+  .answer:hover:not(.locked):not(.hidden) { transform: translateY(-2px); }
+  .answer:hover:not(.locked):not(.hidden) .hex { background: linear-gradient(180deg, #2a3496, #0d1350); }
+  .answer.selected .hex { background: linear-gradient(180deg, #ffb13b, #d46d00); color: #1b0f00; }
+  .answer.selected .letter { color: #fff; }
+  .answer.correct .hex { background: linear-gradient(180deg, #3ee07c, #0f8a3b); color: #fff; animation: flash .35s 4 alternate; }
+  .answer.correct .letter { color: #fff; }
+  .answer.wrong .hex { background: linear-gradient(180deg, #ff5a63, #a3141c); color: #fff; }
+  .answer.wrong .letter { color: #fff; }
+  .answer.hidden { visibility: hidden; }
+  .answer.locked { cursor: default; }
+  @keyframes flash { from { filter: brightness(1); } to { filter: brightness(1.45); } }
+  .suspense .answer.selected .hex { animation: suspense .6s infinite alternate; }
+  @keyframes suspense { from { filter: brightness(.85); } to { filter: brightness(1.3); } }
+
+  /* ladder */
+  .ladder-title { text-align: center; color: var(--gold2); font-weight: 800; letter-spacing: .12em; margin-bottom: 1vh; font-size: clamp(13px, 1.1vw, 18px); }
+  .rungs { list-style: none; display: flex; flex-direction: column-reverse; gap: .25vh; }
+  .rung {
+    display: flex; justify-content: space-between; align-items: center; padding: .28vh .8vw; border-radius: 6px;
+    font-size: clamp(13px, 1.25vw, 22px); font-weight: 700; color: var(--orange); line-height: 1.25;
+  }
+  .rung .n { color: var(--muted); width: 2.2em; }
+  .rung.safe { color: #fff; }
+  .rung.safe .amt::after { content: " ◆"; color: var(--gold); font-size: .75em; }
+  .rung.done { opacity: .55; }
+  .rung.current { background: linear-gradient(90deg, #f5a623, #ffcf5c); color: #1c1200; box-shadow: 0 0 14px rgba(245,197,66,.7); }
+  .rung.current .n { color: #1c1200; }
+  .rung.top { font-size: clamp(14px, 1.4vw, 25px); }
+  .ladder-note { margin-top: 1.2vh; font-size: clamp(11px, .85vw, 14px); color: var(--muted); text-align: center; }
+
+  /* overlays */
+  .overlay {
+    position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center;
+    background: radial-gradient(ellipse at center, rgba(20,10,70,.86), rgba(2,3,15,.95));
+  }
+  .overlay.show { display: flex; animation: fadein .35s; }
+  @keyframes fadein { from { opacity: 0; } }
+  .card {
+    width: min(92vw, 1100px); max-height: 92vh; overflow: auto; text-align: center; padding: 4vh 4vw;
+    background: linear-gradient(180deg, rgba(27,35,115,.96), rgba(7,11,59,.98)); border: 2px solid var(--line);
+    border-radius: 24px; box-shadow: 0 0 40px rgba(106,140,255,.45);
+  }
+  .card h1 { font-size: clamp(34px, 5vw, 86px); color: var(--gold2); letter-spacing: .04em; line-height: 1.05; text-shadow: 0 0 22px rgba(245,197,66,.55); }
+  .card h2 { font-size: clamp(22px, 2.6vw, 44px); margin: 1.6vh 0; }
+  .card p { font-size: clamp(16px, 1.6vw, 28px); color: #dfe3ff; margin: 1vh 0; line-height: 1.4; }
+  .big { font-size: clamp(40px, 6vw, 110px) !important; font-weight: 900; color: var(--gold) !important; margin: 1vh 0 !important; }
+  .btn {
+    font-size: clamp(18px, 1.8vw, 32px); font-weight: 800; padding: .6em 1.6em; margin: 1.6vh .6vw 0; border-radius: 60px; cursor: pointer;
+    border: 3px solid var(--gold); color: #1c1200; background: linear-gradient(180deg, #ffd56b, #f0a81c);
+    box-shadow: 0 0 18px rgba(245,197,66,.6); letter-spacing: .03em;
+  }
+  .btn.ghost { background: transparent; color: #fff; border-color: var(--line); box-shadow: 0 0 14px rgba(106,140,255,.5); }
+  .btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+  .toggle { display: inline-flex; align-items: center; gap: .6em; font-size: clamp(15px, 1.4vw, 24px); color: var(--muted); margin-top: 2vh; cursor: pointer; }
+  .toggle input { width: 1.2em; height: 1.2em; accent-color: var(--gold); }
+
+  #teacherScreen { z-index: 22; }
+  .final h2 { font-size: clamp(36px, 5vw, 90px); color: var(--gold2); font-style: italic; }
+
+  /* audience chart */
+  .chart { display: flex; justify-content: center; align-items: flex-end; gap: 3vw; height: 38vh; margin: 3vh 0 1vh; }
+  .bar { width: clamp(50px, 7vw, 120px); display: flex; flex-direction: column; align-items: center; justify-content: flex-end; height: 100%; }
+  .bar .fill { width: 100%; background: linear-gradient(180deg, #8fb0ff, #3a55d8); border: 2px solid #c9d6ff; border-radius: 8px 8px 0 0; height: 0; transition: height 1.4s cubic-bezier(.2,.8,.2,1); }
+  .bar .pct { font-size: clamp(18px, 2vw, 36px); font-weight: 800; margin-bottom: .4vh; }
+  .bar .lab { font-size: clamp(22px, 2.4vw, 42px); font-weight: 900; color: var(--orange); margin-top: .6vh; }
+
+  .phone .bubble {
+    display: inline-block; max-width: 760px; text-align: left; background: #fff; color: #161a3a; border-radius: 22px 22px 22px 4px;
+    padding: 2.4vh 2vw; font-size: clamp(18px, 2vw, 34px); line-height: 1.4; margin-top: 2vh; box-shadow: 0 6px 30px rgba(0,0,0,.4);
+  }
+  .typing::after { content: "▍"; animation: blink .7s infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  table.key { margin: 2vh auto 0; border-collapse: collapse; font-size: clamp(14px, 1.3vw, 22px); }
+  table.key th, table.key td { border: 1px solid rgba(106,140,255,.45); padding: .45em .9em; text-align: left; }
+  table.key th { background: rgba(245,197,66,.18); color: var(--gold2); }
+  table.key tr.miss td { color: #ff9ea4; }
+  .keygrid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 2vw; }
+  .scoretable { margin: 2vh auto 0; border-collapse: collapse; font-size: clamp(14px, 1.3vw, 22px); }
+  .scoretable td { padding: .3em 1em; border-bottom: 1px solid rgba(255,255,255,.15); text-align: left; }
+  .scoretable tr.me td { color: var(--gold); font-weight: 800; }
+
+  .toast {
+    position: fixed; left: 50%; top: 18vh; transform: translateX(-50%); z-index: 30; pointer-events: none;
+    font-size: clamp(26px, 3.6vw, 64px); font-weight: 900; color: var(--gold2); text-shadow: 0 0 24px rgba(245,197,66,.8);
+    opacity: 0; transition: opacity .3s; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+  #confetti { position: fixed; inset: 0; z-index: 25; pointer-events: none; }
+
+  .setup { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4vh 2vw; text-align: left; margin: 3vh auto 0; max-width: 900px; }
+  .setup label { display: flex; flex-direction: column; gap: .5vh; color: var(--muted); font-weight: 700; font-size: clamp(14px, 1.2vw, 20px); }
+  .setup label.wide { grid-column: 1 / -1; }
+  .setup select { font: inherit; font-size: clamp(16px, 1.4vw, 24px); font-weight: 700; color: #fff; background: #0b0f3d; border: 2px solid var(--line); border-radius: 12px; padding: .5em .7em; }
+  .setup .toggle { flex-direction: row; margin-top: 0; align-self: end; padding-bottom: .5em; }
+  .note { font-size: clamp(13px, 1.1vw, 18px) !important; color: var(--muted) !important; }
+  .note a { color: var(--gold2); }
+  .warn { color: #ffb3b8 !important; font-weight: 700; }
+  @media (max-width: 900px) {
+    .setup { grid-template-columns: 1fr; }
+    #app { grid-template-columns: 1fr; }
+    #ladder { display: none; }
+    .answers { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="studio"><div class="rings"></div><div class="beam b1"></div><div class="beam b2"></div><div class="beam b3"></div><div class="floor"></div></div>
+
+<div id="app">
+  <section id="main">
+    <div class="topbar">
+      <div class="brand">Chemistry Champion<small id="brandSub">The 20-Question Challenge</small></div>
+      <div style="display:flex; align-items:center; gap:1.4vw;">
+        <button class="iconbtn" id="fsBtn" title="Full screen">⛶ Full screen</button>
+        <button class="iconbtn" id="restartTop" title="Restart">↻ Restart</button>
+        <div class="lifelines">
+          <button class="life" id="ll5050" title="50:50">50:50</button>
+          <button class="life" id="llPhone" title="Phone a Friend"><svg viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1z"/></svg></button>
+          <button class="life" id="llAudience" title="Ask the Audience"><svg viewBox="0 0 24 24"><path d="M4 20V10h3v10H4zm6.5 0V4h3v16h-3zM17 20v-7h3v7h-3z"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="timerwrap" id="timerwrap">
+      <div class="timerbar"><div class="timerfill" id="timerFill"></div></div>
+      <div class="timernum" id="timerNum">10</div>
+    </div>
+
+    <div class="stage">
+      <div class="qmeta" id="qmeta">Question 1 <span>of 20</span></div>
+      <div class="hexwrap"><div class="hex question" id="question">…</div></div>
+      <div class="answers" id="answers"></div>
+    </div>
+  </section>
+
+  <aside id="ladder">
+    <div class="ladder-title">MONEY LADDER</div>
+    <ol class="rungs" id="rungs"></ol>
+    <div class="ladder-note" id="ladderNote">◆ Safe havens: Question 5 and Question 10</div>
+  </aside>
+</div>
+
+<!-- start -->
+<div class="overlay show" id="startScreen">
+  <div class="card">
+    <p style="letter-spacing:.2em; color:var(--muted); font-weight:700;">CLASSROOM QUIZ</p>
+    <h1>Who Wants to Be a<br>Chemistry Champion?</h1>
+    <div class="setup">
+      <label class="wide">Quiz<select id="quizSel"></select></label>
+      <label>Questions<select id="countSel"></select></label>
+      <label>Time per question<select id="timeSel"><option value="10" selected>10 seconds (challenge)</option><option value="15">15 seconds</option><option value="20">20 seconds</option><option value="30">30 seconds</option><option value="0">No timer</option></select></label>
+      <label class="toggle"><input type="checkbox" id="shuffleChk"> Random question order</label>
+    </div>
+    <p id="startInfo" style="margin-top:2.5vh;"></p>
+    <p>Three lifelines: 50:50, Phone a Friend, Ask the Audience. Press <b>A, B, C or D</b> or click an answer.</p>
+    <p class="warn" id="startWarn" hidden></p>
+    <button class="btn" id="startBtn">▶ START THE GAME</button>
+    <p class="note" style="margin-top:2vh;">Questions come from <a href="../" target="_blank" rel="noopener">ChemQuiz Live → My quizzes</a> on this computer. Multiple-choice and true/false questions are used.</p>
+  </div>
+</div>
+
+<!-- final answer confirm -->
+<div class="overlay" id="confirmScreen">
+  <div class="card final">
+    <h2 id="confirmText">Is that your final answer?</h2>
+    <p id="confirmChoice"></p>
+    <button class="btn" id="yesBtn">YES — LOCK IT IN</button>
+    <button class="btn ghost" id="noBtn">NO, LET ME THINK</button>
+  </div>
+</div>
+
+<!-- phone -->
+<div class="overlay" id="phoneScreen">
+  <div class="card phone">
+    <h2>📞 Phone a Friend</h2>
+    <p id="phoneWho"></p>
+    <div class="bubble"><span id="phoneMsg" class="typing"></span></div><br>
+    <button class="btn" id="phoneClose">THANKS, BACK TO THE GAME</button>
+  </div>
+</div>
+
+<!-- audience -->
+<div class="overlay" id="audienceScreen">
+  <div class="card">
+    <h2>📊 Ask the Audience</h2>
+    <div class="chart" id="chart"></div>
+    <button class="btn" id="audClose">BACK TO THE GAME</button>
+  </div>
+</div>
+
+<!-- end -->
+<div class="overlay" id="endScreen">
+  <div class="card" id="endCard"></div>
+</div>
+
+<!-- teacher -->
+<div class="overlay" id="teacherScreen">
+  <div class="card">
+    <h2 style="color:var(--gold2)">🏆 Answer Key – Teacher's Copy</h2>
+    <div class="keygrid" id="keyGrid"></div>
+    <h2 style="margin-top:3vh;">⭐ Scoring</h2>
+    <table class="scoretable" id="scoreTable"></table>
+    <button class="btn ghost" id="teacherClose">CLOSE</button>
+    <button class="btn" id="teacherRestart">↻ RESTART</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<canvas id="confetti"></canvas>
+
+<script>
+// ===================== QUESTIONS =====================
+// Built-in quiz (exactly as supplied). Other quizzes come from the ChemQuiz Live library saved in this browser.
+const BUILTIN = [
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "What is the chemical formula of water?", a: ["CO₂", "H₂O", "O₂", "NaCl"], c: 1 },
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "Which gas do humans need to breathe to survive?", a: ["Nitrogen", "Hydrogen", "Oxygen", "Carbon dioxide"], c: 2 },
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "What happens when ice melts?", a: ["It changes into gas.", "It changes into liquid water.", "It changes into oxygen.", "It disappears."], c: 1 },
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "Which acid is naturally found in lemons?", a: ["Sulfuric acid", "Hydrochloric acid", "Citric acid", "Nitric acid"], c: 2 },
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "What is the chemical name of table salt?", a: ["Sodium chloride", "Calcium carbonate", "Sodium hydroxide", "Carbon dioxide"], c: 0 },
+  { part: "PART 1 – CHEMISTRY IN EVERYDAY LIFE", q: "Which gas makes balloons float?", a: ["Oxygen", "Carbon dioxide", "Helium", "Hydrogen"], c: 2 },
+  { part: "PART 2 – ATOMS AND ELEMENTS", q: "What is the smallest unit of an element that retains its chemical properties?", a: ["Molecule", "Atom", "Cell", "Compound"], c: 1 },
+  { part: "PART 2 – ATOMS AND ELEMENTS", q: "What is the chemical symbol for gold?", a: ["Go", "Gd", "Au", "Ag"], c: 2 },
+  { part: "PART 2 – ATOMS AND ELEMENTS", q: "Which element is found in the graphite used in pencils?", a: ["Carbon", "Sulfur", "Iron", "Calcium"], c: 0 },
+  { part: "PART 2 – ATOMS AND ELEMENTS", q: "Which metal is liquid at room temperature?", a: ["Iron", "Copper", "Aluminium", "Mercury"], c: 3 },
+  { part: "PART 2 – ATOMS AND ELEMENTS", q: "Which particles are found in the nucleus of an atom?", a: ["Electrons and protons", "Protons and neutrons", "Electrons and neutrons", "Only electrons"], c: 1 },
+  { part: "PART 3 – CHEMICAL REACTIONS", q: "What happens when iron reacts with oxygen and water over time?", a: ["It melts.", "It rusts.", "It evaporates.", "It freezes."], c: 1 },
+  { part: "PART 3 – CHEMICAL REACTIONS", q: "What gas is produced when vinegar reacts with baking soda?", a: ["Oxygen", "Hydrogen", "Carbon dioxide", "Nitrogen"], c: 2 },
+  { part: "PART 3 – CHEMICAL REACTIONS", q: "Which of these is a chemical change?", a: ["Melting ice", "Cutting paper", "Breaking glass", "Burning wood"], c: 3 },
+  { part: "PART 3 – CHEMICAL REACTIONS", q: "What is formed when sulphur dioxide reacts with water?", a: ["Sulphuric acid", "Sulphurous acid", "Hydrochloric acid", "Nitric acid"], c: 1 },
+  { part: "PART 3 – CHEMICAL REACTIONS", q: "What is the pH value of pure water at room temperature?", a: ["1", "3", "7", "14"], c: 2 },
+  { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Which gas do plants absorb during photosynthesis?", a: ["Oxygen", "Carbon dioxide", "Hydrogen", "Nitrogen"], c: 1 },
+  { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Which substance can be used to remove limescale from a kettle?", a: ["Vinegar", "Cooking oil", "Sugar", "Salt"], c: 0 },
+  { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Which of these substances is alkaline (basic)?", a: ["Lemon juice", "Vinegar", "Baking soda", "Orange juice"], c: 2 },
+  { part: "PART 4 – CHEMISTRY AND OUR ENVIRONMENT", q: "Why should we never mix bleach with vinegar?", a: ["It produces harmless water.", "It can release toxic chlorine gas.", "It produces oxygen.", "It makes the mixture freeze."], c: 1 },
+];
+const BUILTIN_ID = "sample-champion";
+
+// Ratings by share of correct answers (18/20, 15/20, 12/20, 9/20 in the original 20-question game)
+const RATINGS = [[0.9, "Chemistry Genius! 🥇"], [0.75, "Excellent!"], [0.6, "Very Good!"], [0.45, "Good!"], [0, "Keep Practising!"]];
+
+const FULL_LADDER = [100, 200, 300, 500, 1000, 2000, 3000, 5000, 8000, 10000, 16000, 25000, 32000, 50000, 64000, 100000, 125000, 250000, 500000, 1000000];
+const LETTERS = ["A", "B", "C", "D"];
+const MAX_Q = 20, MIN_Q = 5;
+let QUESTIONS = [], LADDER = FULL_LADDER.slice(), SAFE = [4, 9], TIME_LIMIT = 10, SCORING = [];
+
+// ===================== STATE =====================
+let cur = 0, correctCount = 0, locked = false, hidden = [], usedLL = {}, selected = -1;
+let timerOn = true, timeLeft = TIME_LIMIT, timerId = null, timerPaused = false, lastTick = 0;
+let history = [];   // per question: chosen index or -1 (timeout) / undefined
+
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString("en-US");
+const esc = (s) => String(s).replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+
+// ===================== QUIZ LIBRARY (shared with ChemQuiz Live) =====================
+function loadQuizzes() {
+  let lib = null;
+  try { lib = JSON.parse(localStorage.getItem("chemquiz-library-v1")); } catch (e) {}
+  const list = [];
+  if (Array.isArray(lib)) lib.forEach((z) => {
+    const qs = (z.qs || []).filter((q) => (q.t === "mc" || q.t === "tf") && Array.isArray(q.a) && q.a.length >= 2 && q.c >= 0 && q.c < q.a.length && q.q)
+      .map((q) => ({ part: (q.topic || "").toUpperCase(), q: q.q, a: q.a.slice(0, 4), c: q.c }));
+    list.push({ id: z.id, title: z.title, qs, skipped: (z.qs || []).length - qs.length });
+  });
+  if (!list.some((z) => z.id === BUILTIN_ID)) list.unshift({ id: BUILTIN_ID, title: "Chemistry Champion – 20 questions", qs: BUILTIN, skipped: 0 });
+  return list;
+}
+let QUIZZES = [];
+function fillQuizSelect() {
+  QUIZZES = loadQuizzes();
+  const want = new URLSearchParams(location.search).get("quiz");
+  const prev = $("quizSel").value;
+  $("quizSel").innerHTML = QUIZZES.map((z) => `<option value="${esc(z.id)}">${esc(z.title)} (${z.qs.length})</option>`).join("");
+  const pick = [want, prev].find((id) => id && QUIZZES.some((z) => z.id === id));
+  if (pick) $("quizSel").value = pick;
+  onQuizChange();
+}
+function currentQuiz() { return QUIZZES.find((z) => z.id === $("quizSel").value) || QUIZZES[0]; }
+function onQuizChange() {
+  const z = currentQuiz(), n = z.qs.length;
+  const opts = [];
+  if (n <= MAX_Q) opts.push([n, `All ${n} questions`]);
+  [5, 10, 15, 20].filter((k) => k < n && k >= MIN_Q).forEach((k) => opts.push([k, `${k} random questions`]));
+  $("countSel").innerHTML = opts.map(([v, t]) => `<option value="${v}">${t}</option>`).join("");
+  $("countSel").value = String(Math.min(n, MAX_Q));
+  updateStartInfo();
+}
+function planLadder(n) {
+  // spread the 20 prize steps over n questions; safe havens at about 1/4 and 1/2 of the way
+  LADDER = n === FULL_LADDER.length ? FULL_LADDER.slice() : Array.from({ length: n }, (_, i) => FULL_LADDER[Math.round((i * (FULL_LADDER.length - 1)) / (n - 1))]);
+  SAFE = [Math.max(0, Math.round(n / 4) - 1), Math.max(1, Math.round(n / 2) - 1)];
+  // rating bands as numbers of correct answers
+  SCORING = RATINGS.map((r, i) => {
+    const min = Math.ceil(r[0] * n - 1e-9), max = i === 0 ? n : Math.ceil(RATINGS[i - 1][0] * n - 1e-9) - 1;
+    return { min, max, label: r[1] };
+  }).filter((s) => s.min <= s.max);
+}
+function updateStartInfo() {
+  const z = currentQuiz(), n = Math.min(+$("countSel").value || 0, z.qs.length);
+  const warn = $("startWarn");
+  if (z.qs.length < MIN_Q) {
+    warn.hidden = false; warn.textContent = `This quiz has only ${z.qs.length} multiple-choice or true/false question${z.qs.length === 1 ? "" : "s"}; the game needs at least ${MIN_Q}.`;
+    $("startBtn").disabled = true; $("startInfo").textContent = ""; return;
+  }
+  $("startBtn").disabled = false;
+  warn.hidden = !z.skipped;
+  warn.textContent = z.skipped ? `${z.skipped} number / gap-fill question${z.skipped === 1 ? " is" : "s are"} skipped in this game.` : "";
+  planLadder(n);
+  $("startInfo").innerHTML = `${n} questions · climb the ladder to <b style="color:var(--gold)">1,000,000</b> · safe havens at Question ${SAFE[0] + 1} and Question ${SAFE[1] + 1}`;
+}
+function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function prepareGame() {
+  const z = currentQuiz(), n = Math.min(+$("countSel").value, z.qs.length);
+  let idx = z.qs.map((_, i) => i);
+  if (n < idx.length) { idx = shuffle(idx).slice(0, n); if (!$("shuffleChk").checked) idx.sort((a, b) => a - b); }
+  else if ($("shuffleChk").checked) shuffle(idx);
+  QUESTIONS = idx.map((i) => z.qs[i]);
+  planLadder(QUESTIONS.length);
+  TIME_LIMIT = +$("timeSel").value || 10;
+  timerOn = +$("timeSel").value > 0;
+  $("brandSub").textContent = `The ${QUESTIONS.length}-Question Challenge`;
+  $("ladderNote").textContent = `◆ Safe havens: Question ${SAFE[0] + 1} and Question ${SAFE[1] + 1}`;
+  $("timerNum").textContent = TIME_LIMIT;
+  buildLadder();
+}
+
+// ===================== SOUND (generated, works offline) =====================
+let actx = null;
+function tone(freq, dur, type = "sine", vol = 0.15, delay = 0) {
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    const t = actx.currentTime + delay;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + 0.02); g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+    o.connect(g); g.connect(actx.destination); o.start(t); o.stop(t + dur + 0.05);
+  } catch (e) {}
+}
+const sfx = {
+  correct() { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.35, "triangle", 0.16, i * 0.11)); },
+  wrong() { tone(220, 0.5, "sawtooth", 0.12); tone(160, 0.8, "sawtooth", 0.12, 0.25); },
+  lock() { tone(110, 1.6, "sine", 0.2); tone(165, 1.6, "sine", 0.1); },
+  tick() { tone(900, 0.06, "square", 0.05); },
+  win() { [523, 659, 784, 1047, 784, 1047, 1319].forEach((f, i) => tone(f, 0.45, "triangle", 0.16, i * 0.16)); },
+};
+
+// ===================== BUILD UI =====================
+function buildLadder() {
+  const ol = $("rungs"); ol.innerHTML = "";
+  LADDER.forEach((v, i) => {
+    const li = document.createElement("li");
+    li.className = "rung" + (SAFE.includes(i) ? " safe" : "") + (i === LADDER.length - 1 ? " top safe" : "");
+    li.id = "rung" + i;
+    li.innerHTML = `<span class="n">${i + 1}</span><span class="amt">${fmt(v)}</span>`;
+    ol.appendChild(li);
+  });
+}
+function updateLadder() {
+  LADDER.forEach((_, i) => {
+    const r = $("rung" + i);
+    if (!r) return;
+    r.classList.toggle("current", i === cur);
+    r.classList.toggle("done", i < cur);
+  });
+}
+
+function showQuestion() {
+  locked = false; selected = -1; hidden = [];
+  const Q = QUESTIONS[cur];
+  $("qmeta").innerHTML = `Question ${cur + 1} <span>of ${QUESTIONS.length} · for ${fmt(LADDER[cur])}</span>`;
+  $("question").textContent = Q.q;
+  const box = $("answers"); box.innerHTML = "";
+  box.classList.remove("suspense");
+  Q.a.forEach((txt, i) => {
+    const d = document.createElement("div");
+    d.className = "answer"; d.dataset.i = i;
+    d.innerHTML = `<div class="hexwrap"><div class="hex"><span class="letter">${LETTERS[i]}:</span><span>${esc(txt)}</span></div></div>`;
+    d.onclick = () => choose(i);
+    box.appendChild(d);
+  });
+  updateLadder();
+  ["ll5050", "llPhone", "llAudience"].forEach((id) => ($(id).disabled = !!usedLL[id]));
+  if (Q.a.length < 3) $("ll5050").disabled = true;   // nothing to remove on a 2-answer question
+  startTimer();
+}
+
+// ===================== TIMER =====================
+function startTimer() {
+  stopTimer();
+  timeLeft = TIME_LIMIT; timerPaused = false;
+  $("timerwrap").style.visibility = timerOn ? "visible" : "hidden";
+  renderTimer();
+  if (!timerOn) return;
+  lastTick = performance.now();
+  let lastSec = TIME_LIMIT;
+  timerId = setInterval(() => {
+    const now = performance.now();
+    if (!timerPaused) {
+      timeLeft -= (now - lastTick) / 1000;
+      const s = Math.ceil(timeLeft);
+      if (s < lastSec && s <= 3 && s > 0) sfx.tick();
+      lastSec = s;
+      if (timeLeft <= 0) { timeLeft = 0; renderTimer(); stopTimer(); timeUp(); return; }
+      renderTimer();
+    }
+    lastTick = now;
+  }, 100);
+}
+function stopTimer() { if (timerId) clearInterval(timerId); timerId = null; }
+function pauseTimer(p) { timerPaused = p; lastTick = performance.now(); }
+function renderTimer() {
+  const pct = Math.max(0, timeLeft / TIME_LIMIT) * 100;
+  const f = $("timerFill");
+  f.style.width = pct + "%";
+  f.style.backgroundPosition = (100 - pct) + "% 0";
+  const n = $("timerNum");
+  n.textContent = Math.ceil(timeLeft);
+  n.classList.toggle("low", timeLeft <= 3);
+}
+
+// ===================== ANSWERING =====================
+function answerEls() { return [...document.querySelectorAll(".answer")]; }
+
+function choose(i) {
+  if (locked || hidden.includes(i) || anyModalOpen() || !QUESTIONS[cur] || i >= QUESTIONS[cur].a.length) return;
+  selected = i;
+  answerEls().forEach((el, k) => el.classList.toggle("selected", k === i));
+  pauseTimer(true);
+  $("confirmChoice").innerHTML = `<b style="color:var(--orange)">${LETTERS[i]}:</b> ${esc(QUESTIONS[cur].a[i])}`;
+  $("confirmScreen").classList.add("show");
+}
+$("noBtn").onclick = () => {
+  $("confirmScreen").classList.remove("show");
+  answerEls().forEach((el) => el.classList.remove("selected"));
+  selected = -1;
+  pauseTimer(false);
+};
+$("yesBtn").onclick = () => {
+  $("confirmScreen").classList.remove("show");
+  lockAnswer(selected);
+};
+
+function lockAnswer(i) {
+  locked = true; stopTimer();
+  answerEls().forEach((el) => el.classList.add("locked"));
+  $("answers").classList.add("suspense");
+  sfx.lock();
+  toast("Locking it in…", 1900);
+  setTimeout(() => reveal(i), 2200);   // dramatic pause
+}
+
+function reveal(i) {
+  $("answers").classList.remove("suspense");
+  const Q = QUESTIONS[cur], els = answerEls();
+  history[cur] = i;
+  if (i === Q.c) {
+    els[i].classList.remove("selected"); els[i].classList.add("correct");
+    correctCount++;
+    sfx.correct();
+    if (cur === QUESTIONS.length - 1) {
+      setTimeout(() => endGame(true), 1800);
+    } else {
+      toast(`Correct! ${fmt(LADDER[cur])}` + (SAFE.includes(cur) ? " — SAFE HAVEN!" : ""), 1600);
+      setTimeout(() => { cur++; showQuestion(); }, 2100);
+    }
+  } else {
+    if (i >= 0) { els[i].classList.remove("selected"); els[i].classList.add("wrong"); }
+    els[Q.c].classList.add("correct");
+    sfx.wrong();
+    setTimeout(() => endGame(false), 2800);
+  }
+}
+
+function timeUp() {
+  if (locked) return;
+  locked = true;
+  closeModals();
+  answerEls().forEach((el) => el.classList.add("locked"));
+  toast("⏰ Time's up!", 1800);
+  reveal(-1);
+}
+
+// ===================== LIFELINES =====================
+function useLL(id) { usedLL[id] = true; $(id).disabled = true; }
+function remaining() { return QUESTIONS[cur].a.map((_, k) => k).filter((k) => !hidden.includes(k)); }
+function anyModalOpen() { return ["confirmScreen", "phoneScreen", "audienceScreen", "endScreen", "teacherScreen", "startScreen"].some((id) => $(id).classList.contains("show")); }
+
+$("ll5050").onclick = () => {
+  const Q = QUESTIONS[cur];
+  if (locked || usedLL.ll5050 || anyModalOpen() || !Q || Q.a.length < 3) return;
+  useLL("ll5050");
+  // keep the correct answer and one wrong answer
+  const wrong = shuffle(Q.a.map((_, k) => k).filter((k) => k !== Q.c)).slice(0, Q.a.length - 2);
+  hidden = wrong;
+  answerEls().forEach((el, k) => el.classList.toggle("hidden", wrong.includes(k)));
+  tone(660, 0.2, "triangle", 0.12); tone(440, 0.25, "triangle", 0.12, 0.15);
+};
+
+const FRIENDS = ["Maria", "Luka", "Elena", "Stefan", "Ana", "David", "Sara", "Marko"];
+$("llPhone").onclick = () => {
+  if (locked || usedLL.llPhone || anyModalOpen()) return;
+  useLL("llPhone"); pauseTimer(true);
+  const Q = QUESTIONS[cur], rem = remaining();
+  let guess = Q.c;
+  if (Math.random() >= 0.8) {
+    const wrongs = rem.filter((k) => k !== Q.c);
+    if (wrongs.length) guess = wrongs[Math.floor(Math.random() * wrongs.length)];
+  }
+  const sure = guess === Q.c ? ["I'm pretty sure", "I studied this last week —", "Easy one!", "I'd go with"] : ["Hmm… I think", "Not 100% sure, but maybe", "I'm guessing a bit here —"];
+  const lead = sure[Math.floor(Math.random() * sure.length)];
+  const name = FRIENDS[Math.floor(Math.random() * FRIENDS.length)];
+  $("phoneWho").textContent = `Calling your friend ${name}…`;
+  const msg = `${lead} it's ${LETTERS[guess]}: ${Q.a[guess]}.`;
+  $("phoneScreen").classList.add("show");
+  const el = $("phoneMsg"); el.textContent = ""; el.classList.add("typing");
+  let k = 0;
+  const t = setInterval(() => { el.textContent = msg.slice(0, ++k); if (k >= msg.length) { clearInterval(t); el.classList.remove("typing"); } }, 35);
+};
+$("phoneClose").onclick = () => { $("phoneScreen").classList.remove("show"); if (!locked) pauseTimer(false); };
+
+$("llAudience").onclick = () => {
+  if (locked || usedLL.llAudience || anyModalOpen()) return;
+  useLL("llAudience"); pauseTimer(true);
+  const Q = QUESTIONS[cur], rem = remaining(), n = Q.a.length;
+  const votes = Q.a.map(() => 0);
+  const others = rem.filter((k) => k !== Q.c);
+  const top = others.length === 0 ? 100 : others.length === 1 ? 55 + Math.floor(Math.random() * 25) : 42 + Math.floor(Math.random() * 25);
+  votes[Q.c] = top;
+  let left = 100 - top;
+  others.forEach((k, idx) => {
+    if (idx === others.length - 1) { votes[k] = left; }
+    else { const v = Math.floor(Math.random() * Math.min(left, top - 1)); votes[k] = v; left -= v; }
+  });
+  // make sure the correct answer stays the highest
+  others.forEach((k) => { if (votes[k] >= votes[Q.c]) { const d = votes[k] - votes[Q.c] + 3; votes[k] -= d; votes[Q.c] += d; } });
+  const chart = $("chart"); chart.innerHTML = "";
+  Q.a.forEach((_, k) => {
+    const b = document.createElement("div"); b.className = "bar";
+    b.innerHTML = `<div class="pct">${hidden.includes(k) ? "" : votes[k] + "%"}</div><div class="fill"></div><div class="lab">${LETTERS[k]}</div>`;
+    chart.appendChild(b);
+  });
+  $("audienceScreen").classList.add("show");
+  requestAnimationFrame(() => setTimeout(() => {
+    [...chart.querySelectorAll(".fill")].forEach((f, k) => (f.style.height = (hidden.includes(k) ? 0 : votes[k]) + "%"));
+  }, 60));
+};
+$("audClose").onclick = () => { $("audienceScreen").classList.remove("show"); if (!locked) pauseTimer(false); };
+
+function closeModals() { ["confirmScreen", "phoneScreen", "audienceScreen"].forEach((id) => $(id).classList.remove("show")); }
+
+// ===================== END =====================
+function rating(n) { return SCORING.find((s) => n >= s.min && n <= s.max) || SCORING[SCORING.length - 1]; }
+const band = (s) => (s.min === s.max ? `${s.min}` : `${s.min}–${s.max}`);
+function wonAmount(win) {
+  if (win) return LADDER[LADDER.length - 1];
+  if (cur > SAFE[1]) return LADDER[SAFE[1]];
+  if (cur > SAFE[0]) return LADDER[SAFE[0]];
+  return 0;
+}
+
+function endGame(win) {
+  stopTimer(); closeModals();
+  const amount = wonAmount(win), N = QUESTIONS.length;
+  const r = rating(correctCount);
+  const card = $("endCard");
+  const scoreRows = SCORING.map((s) => `<tr class="${s === r ? "me" : ""}"><td>${band(s)}</td><td>${s.label}</td></tr>`).join("");
+  const Q = QUESTIONS[cur];
+  card.innerHTML = win
+    ? `<h1>CHEMISTRY CHAMPION!</h1>
+       <p class="big">${fmt(amount)}</p>
+       <h2>Score: ${correctCount} / ${N} — ${r.label}</h2>`
+    : `<h1>GAME OVER</h1>
+       <p>${history[cur] === -1 ? "Time ran out on" : "Wrong answer on"} Question ${cur + 1}. The correct answer was
+          <b style="color:#59f08f">${LETTERS[Q.c]}: ${esc(Q.a[Q.c])}</b>.</p>
+       <p style="margin-top:2vh;">Total won</p>
+       <p class="big">${fmt(amount)}</p>
+       <p>${amount > 0 ? "You kept your safe haven winnings." : "You did not reach a safe haven."}</p>
+       <h2>Score: ${correctCount} / ${N} — ${r.label}</h2>`;
+  card.innerHTML += `<table class="scoretable">${scoreRows}</table>
+       <button class="btn" onclick="restart()">↻ RESTART</button>
+       <button class="btn ghost" onclick="showTeacher()">👩‍🏫 TEACHER MODE</button>`;
+  $("endScreen").classList.add("show");
+  if (win) { sfx.win(); confetti(); }
+}
+
+function showTeacher() {
+  const rows = QUESTIONS.map((Q, i) => {
+    const miss = history[i] !== undefined && history[i] !== Q.c;
+    return `<tr class="${miss ? "miss" : ""}"><td>${i + 1}</td><td>${LETTERS[Q.c]} – ${esc(Q.a[Q.c])}</td></tr>`;
+  });
+  const half = Math.ceil(rows.length / 2);
+  $("keyGrid").innerHTML =
+    `<table class="key"><tr><th>Question</th><th>Correct answer</th></tr>${rows.slice(0, half).join("")}</table>` +
+    `<table class="key"><tr><th>Question</th><th>Correct answer</th></tr>${rows.slice(half).join("")}</table>`;
+  $("scoreTable").innerHTML = `<tr><td><b>Correct answers</b></td><td><b>Result</b></td></tr>` +
+    SCORING.map((s) => `<tr><td>${band(s)}</td><td>${s.label}</td></tr>`).join("");
+  $("teacherScreen").classList.add("show");
+}
+$("teacherClose").onclick = () => $("teacherScreen").classList.remove("show");
+$("teacherRestart").onclick = () => restart();
+
+function restart() {
+  stopTimer();
+  ["confirmScreen", "phoneScreen", "audienceScreen", "endScreen", "teacherScreen"].forEach((id) => $(id).classList.remove("show"));
+  stopConfetti();
+  cur = 0; correctCount = 0; usedLL = {}; history = []; locked = false;
+  fillQuizSelect();
+  $("startScreen").classList.add("show");
+  updateLadder();
+}
+$("restartTop").onclick = restart;
+
+$("startBtn").onclick = () => {
+  if ($("startBtn").disabled) return;
+  prepareGame();
+  $("startScreen").classList.remove("show");
+  cur = 0; correctCount = 0; usedLL = {}; history = [];
+  try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); } catch (e) {}
+  showQuestion();
+};
+$("quizSel").onchange = onQuizChange;
+$("countSel").onchange = updateStartInfo;
+// quizzes edited in ChemQuiz Live (another tab) appear when you come back here
+window.addEventListener("storage", (e) => { if (e.key === "chemquiz-library-v1" && $("startScreen").classList.contains("show")) fillQuizSelect(); });
+
+// ===================== MISC =====================
+let toastT = null;
+function toast(msg, ms) {
+  const t = $("toast"); t.textContent = msg; t.classList.add("show");
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), ms);
+}
+
+$("fsBtn").onclick = () => {
+  if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+  else document.exitFullscreen?.();
+};
+
+document.addEventListener("keydown", (e) => {
+  if (e.target && e.target.tagName === "SELECT") return;
+  const k = e.key.toUpperCase();
+  if ($("confirmScreen").classList.contains("show")) {
+    if (k === "ENTER" || k === "Y") $("yesBtn").click();
+    if (k === "ESCAPE" || k === "N") $("noBtn").click();
+    return;
+  }
+  const i = LETTERS.indexOf(k);
+  if (i >= 0) choose(i);
+});
+
+// ===================== CONFETTI =====================
+let confettiRun = false;
+function confetti() {
+  const cv = $("confetti"), ctx = cv.getContext("2d");
+  cv.width = innerWidth; cv.height = innerHeight;
+  const cols = ["#f5c542", "#ffdf7e", "#6a8cff", "#ff5a8a", "#3ee07c", "#ffffff", "#b07cff"];
+  const P = Array.from({ length: 260 }, () => ({
+    x: Math.random() * cv.width, y: -20 - Math.random() * cv.height, w: 6 + Math.random() * 8, h: 10 + Math.random() * 10,
+    vy: 2 + Math.random() * 4, vx: -1.5 + Math.random() * 3, r: Math.random() * 6, vr: -0.2 + Math.random() * 0.4,
+    c: cols[Math.floor(Math.random() * cols.length)],
+  }));
+  confettiRun = true;
+  (function frame() {
+    if (!confettiRun) { ctx.clearRect(0, 0, cv.width, cv.height); return; }
+    ctx.clearRect(0, 0, cv.width, cv.height);
+    P.forEach((p) => {
+      p.x += p.vx; p.y += p.vy; p.r += p.vr;
+      if (p.y > cv.height + 20) { p.y = -20; p.x = Math.random() * cv.width; }
+      ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.r); ctx.fillStyle = p.c; ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); ctx.restore();
+    });
+    requestAnimationFrame(frame);
+  })();
+}
+function stopConfetti() { confettiRun = false; }
+
+fillQuizSelect();
+planLadder(QUESTIONS.length || Math.min(MAX_Q, currentQuiz().qs.length));
+buildLadder();
+updateLadder();
+</script>
+</body>
+</html>
